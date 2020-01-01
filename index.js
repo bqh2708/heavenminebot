@@ -1,4 +1,4 @@
-const { Client } = require("discord.js");
+const { Client, RichEmbed } = require("discord.js");
 const { Guild } = require("discord.js");
 const { config } = require("dotenv");
 
@@ -48,33 +48,58 @@ client.on("message", async message => {
     // args == ["hello", "I", "am", "a", "bot"]
     const args = message.content.slice(prefix.length).trim().split(/ +/g);
     const cmd = (args.shift()).toLowerCase();
-    if (cmd === "say") {
-        // Check if you can delete the message
-        if (message.deletable) message.delete();
 
-        if (args.length === 0) {
-            message.reply(`Nothing to say?`).then(m => m.delete(5000));
-            return
-        };
+    switch (cmd) {
 
-        // Role color
-        const roleColor = message.guild.me.highestRole.hexColor;
-
-        // If the first argument is embed, send an embed,
-        // otherwise, send a normal message
-        if (args[0].toLowerCase() === "embed") {
+        case 'help':
             const embed = new RichEmbed()
-                .setDescription(args.slice(1).join(" "))
-                .setColor(roleColor === "#000000" ? "#ffffff" : roleColorv)
-                .setTimestamp()
-                .setImage(client.user.displayAvatarURL)
-                .setAuthor(message.author.username, message.author.displayAvatarURL);
+                .setColor("#98D989")
+                .setDescription('Không có lệnh nào hêt :)')
+                .setAuthor('Danh sách các lệnh HM', client.user.displayAvatarURL);
 
             message.channel.send(embed);
-        } else {
-            message.channel.send(args.join(" "));
-        }
+            break;
+
+        case 'say':
+            // Check if you can delete the message
+            if (message.deletable) message.delete();
+
+            if (args.length === 0) {
+                message.reply(`Nothing to say?`).then(m => m.delete(5000));
+                break;
+            };
+
+            // If the first argument is embed, send an embed,
+            // otherwise, send a normal message
+            if (args[0].toLowerCase() === "embed") {
+                const embed = new RichEmbed()
+                    .setDescription(args.slice(1).join(" "))
+                    .setColor("#98D989")
+                    .setTitle('1234')
+                    .setDescription('1234')
+                // .setImage(client.user.displayAvatarURL)
+                // .setAuthor(message.author.username, message.author.displayAvatarURL);
+
+                message.channel.send(embed);
+            } else {
+                message.channel.send(args.join(" "));
+            }
+            break;
+
+        case 'nickname':
+            if (args.join(" ") === 'clear') {
+                message.member.setNickname(`HM | ${message.author.username}`);
+            } else {
+                message.member.setNickname(`HM | ${args.join(" ")}`);
+            }
+            break;
+
+        default:
+            message.channel.send('Hãy sử dụng `hm! help` để biết thêm về các lệnh !');
+            break;
     }
+
+
 });
 
 client.on('guildMemberUpdate', (oldData, newData) => {
