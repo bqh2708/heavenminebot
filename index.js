@@ -178,8 +178,8 @@ client.on("message", async message => {
             break;
 
         case 'mylevel':
-            if (!level[id]) {
-                level[id] = { xp: 0, level: 1 };
+            if (!level[message.member.id]) {
+                level[message.member.id] = { xp: 0, level: 1 };
             }
 
             message.channel.send(`level: ${level[message.member.id]['level']}     xp: ${level[message.member.id]['xp']}`);
