@@ -1,6 +1,13 @@
-const { Client, RichEmbed } = require("discord.js");
+const { Client, RichEmbed, Discord, Attachment } = require("discord.js");
 const { Guild } = require("discord.js");
 const { config } = require("dotenv");
+var fs = require('fs');
+let level = require("./level.json");
+const Canvas = require('canvas');
+
+config({
+    path: __dirname + "/.env"
+})
 
 // Declares our bot,
 // the disableEveryone prevents the client to ping @everyone
@@ -11,9 +18,22 @@ const guild = new Guild({
     disableEveryone: true
 });
 
-config({
-    path: __dirname + "/.env"
-})
+// Pass the entire Canvas object because you'll need to access its width, as well its context
+const applyText = (canvas, text) => {
+    const ctx = canvas.getContext('2d');
+
+    // Declare a base size of the font
+    let fontSize = 70;
+
+    do {
+        // Assign the font to the context and decrement it so it can be measured again
+        ctx.font = `${fontSize -= 10}px sans-serif`;
+        // Compare pixel width of the text to the canvas minus the approximate avatar size
+    } while (ctx.measureText(text).width > canvas.width - 300);
+
+    // Return the result to use in the actual canvas
+    return ctx.font;
+};
 
 // When the bot's online, what's in these brackets will be executed
 client.on("ready", () => {
@@ -76,7 +96,7 @@ client.on("message", async message => {
                     .setDescription(args.slice(1).join(" "))
                     .setColor("#98D989")
                     .setTitle('1234')
-                    .setDescription('1234')
+                    .setDescription('1234');
                 // .setImage(client.user.displayAvatarURL)
                 // .setAuthor(message.author.username, message.author.displayAvatarURL);
 
@@ -92,6 +112,60 @@ client.on("message", async message => {
             } else {
                 message.member.setNickname(`HM | ${args.join(" ")}`);
             }
+            break;
+
+        case 'level':
+            const canvas = Canvas.createCanvas(700, 250);
+            const ctx = canvas.getContext('2d');
+
+            const background = await Canvas.loadImage('./backgoundLevel.jpg');
+            ctx.drawImage(background, 0, 0, canvas.width, canvas.height);
+
+            ctx.strokeStyle = '#74037b';
+            ctx.strokeRect(0, 0, canvas.width, canvas.height);
+
+            // Slightly smaller text placed above the member's display name
+            ctx.font = '28px sans-serif';
+            ctx.fillStyle = '#ffffff';
+            ctx.fillText('test,', canvas.width / 2.5, canvas.height / 3.5);
+
+            // Add an exclamation point here and below
+            ctx.font = applyText(canvas, `${message.member.displayName}!`);
+            ctx.fillStyle = '#ffffff';
+            ctx.fillText(`${message.member.displayName}!`, canvas.width / 2.5, canvas.height / 1.8);
+
+            ctx.beginPath();
+            ctx.arc(125, 125, 100, 0, Math.PI * 2, true);
+            ctx.closePath();
+            ctx.clip();
+
+            const avatar = await Canvas.loadImage(message.member.user.displayAvatarURL);
+            ctx.drawImage(avatar, 25, 25, 200, 200);
+
+            const attachment = new Attachment(canvas.toBuffer(), `level.png`);
+            message.channel.send(`test`, attachment);
+
+            // const levelInfo = level[message.author.id];
+
+            // level['id'] = { xp: 0, level: 1 };
+            // fs.writeFile('./level.json', JSON.stringify(level), (err) => {
+            //     if (err) console.log(err);
+            // });
+            break;
+
+
+        case 'test':
+            const voiceChannels = client.channels.filter(c => c.type === 'voice');
+            let count = '';
+
+            for (const [id, voiceChannel] of voiceChannels) {
+                for (const [id, member] of voiceChannel.members) {
+                    console.info(id);
+                }
+            }
+            // setInterval(() => {
+            //     message.channel.send(`test`);
+            // }, 1200);
             break;
 
         default:
