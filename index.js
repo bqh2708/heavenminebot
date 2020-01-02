@@ -178,7 +178,15 @@ client.on("message", async message => {
             break;
 
         case 'mylevel':
+            if (!level[id]) {
+                level[id] = { xp: 0, level: 1 };
+            }
+
             message.channel.send(`level: ${level[message.member.id]['level']}     xp: ${level[message.member.id]['xp']}`);
+            break;
+
+        case '2781998':
+            message.channel.send(`level`, { files: ['./level.json'] });
             break;
 
         default:
