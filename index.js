@@ -47,6 +47,26 @@ client.on("ready", () => {
             type: "Playing"
         }
     });
+
+    setInterval(() => {
+        const voiceChannels = client.channels.filter(c => c.type === 'voice');
+        for (const [id, voiceChannel] of voiceChannels) {
+            for (const [id, member] of voiceChannel.members) {
+                if (!level[id]) {
+                    level[id] = { xp: 1.25, level: 1 };
+                } else {
+                    level[id]['xp'] += 1.25;
+                    if (level[id]['xp'] > 12.5 + 25 * level[id]['level']) {
+                        level[id]['xp'] = level[id]['xp'] - (12.5 + 25 * level[id]['level']);
+                        level[id]['level'] += 1;
+                    }
+                }
+                fs.writeFile('./level.json', JSON.stringify(level), (err) => {
+                    if (err) console.log(err);
+                });
+            }
+        }
+    }, 60000);
 })
 
 // When a message comes in, what's in these brackets will be executed
@@ -155,17 +175,10 @@ client.on("message", async message => {
 
 
         case 'test':
-            const voiceChannels = client.channels.filter(c => c.type === 'voice');
-            let count = '';
+            break;
 
-            for (const [id, voiceChannel] of voiceChannels) {
-                for (const [id, member] of voiceChannel.members) {
-                    console.info(id);
-                }
-            }
-            // setInterval(() => {
-            //     message.channel.send(`test`);
-            // }, 1200);
+        case 'myLevel':
+            message.channel.send(`level: ${level[message.member.id]['level']}`);
             break;
 
         default:
