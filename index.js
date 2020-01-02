@@ -178,7 +178,7 @@ client.on("message", async message => {
             break;
 
         case 'mylevel':
-            message.channel.send(`level: ${level[message.member.id]['level']}`);
+            message.channel.send(`level: ${level[message.member.id]['level']}     xp: ${level[message.member.id]['xp']}`);
             break;
 
         default:
