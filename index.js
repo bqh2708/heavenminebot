@@ -157,7 +157,8 @@ client.on("message", async message => {
             if (args[0]) {
                 switch (args[0]) {
                     case 'set':
-                        if (args[1] && +args[1] !== NaN) {
+                        const lv = Number(args[1]);
+                        if (args[1] && !isNaN(lv)) {
                             const uid = args[1].replace('<@!', '').replace('>', '');
                             level[uid]['level'] = args[2];
                             level[uid]['xp'] = 0;
