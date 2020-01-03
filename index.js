@@ -83,6 +83,10 @@ client.on("message", async message => {
             level[uid]['xp'] = level[uid]['xp'] - (12.5 + 40 * level[uid]['level']);
             level[uid]['level'] += 1;
         }
+
+        fs.writeFile('./level.json', JSON.stringify(level), (err) => {
+            if (err) console.log(err);
+        });
     }
 
     // Tăng exp khi chat end
@@ -150,97 +154,121 @@ client.on("message", async message => {
             break;
 
         case 'level':
-            const canvas = Canvas.createCanvas(725, 275);
-            const ctx = canvas.getContext('2d');
-            const avatar = await Canvas.loadImage(message.member.user.displayAvatarURL);
+            if (args[0]) {
+                switch (args[0]) {
+                    case 'set':
+                        if (args[1] && +args[1] !== NaN) {
+                            const uid = args[1].replace('<@!', '').replace('>', '');
+                            level[uid]['level'] = args[2];
+                            level[uid]['xp'] = 0;
 
-            const currentXp = level[uid]['xp'];
-            const nextXp = 12.5 + 40 * level[uid]['level'];
+                            fs.writeFile('./level.json', JSON.stringify(level), (err) => {
+                                if (err) console.log(err);
+                            });
+                        } else {
+                            message.channel.send('Hãy nhập level và là số !');
+                        }
+                        break;
 
-            ctx.beginPath();
-            var grd = ctx.createLinearGradient(150, 0, 425, 0);
-            grd.addColorStop(0, "#1755b3");
-            grd.addColorStop(1, "#0e3671");
-            ctx.fillStyle = grd;
-            ctx.moveTo(725, 275);
-            ctx.lineTo(725, 0);
-            ctx.lineTo(300, 0);
-            ctx.lineTo(250, 275);
-            ctx.lineTo(725, 275);
-            ctx.drawImage(avatar, 0, 0, 300, 275);
+                    default:
+                        message.reply(`Unknow Command`).then(m => m.delete(5000));
+                        break;
+                }
+            } else {
+                const canvas = Canvas.createCanvas(725, 275);
+                const ctx = canvas.getContext('2d');
+                const avatar = await Canvas.loadImage(message.member.user.displayAvatarURL);
 
-            ctx.fill();
+                const currentXp = level[uid]['xp'];
+                const nextXp = 12.5 + 40 * level[uid]['level'];
 
-            ctx.beginPath();
-            ctx.moveTo(725, 275);
-            ctx.lineTo(725, 150);
-            ctx.lineTo(273, 150);
-            ctx.lineTo(259, 225);
-            ctx.lineTo(725, 225);
-            ctx.fillStyle = '#00112890'
-            ctx.fill();
+                ctx.beginPath();
+                var grd = ctx.createLinearGradient(150, 0, 425, 0);
+                grd.addColorStop(0, "#1755b3");
+                grd.addColorStop(1, "#0e3671");
+                ctx.fillStyle = grd;
+                ctx.moveTo(725, 275);
+                ctx.lineTo(725, 0);
+                ctx.lineTo(300, 0);
+                ctx.lineTo(250, 275);
+                ctx.lineTo(725, 275);
+                ctx.drawImage(avatar, 0, 0, 300, 275);
 
-            // For Display XP Start
-            ctx.beginPath();
-            ctx.moveTo(682, 275);
-            ctx.lineTo(682, 52);
-            ctx.lineTo(348, 52);
-            ctx.lineTo(348, 23);
-            ctx.lineTo(682, 23);
-            ctx.fillStyle = '#96a4b9'
-            ctx.fill();
+                ctx.fill();
 
-            ctx.beginPath();
-            ctx.moveTo(680, 275);
-            ctx.lineTo(680, 50);
-            ctx.lineTo(350, 50);
-            ctx.lineTo(350, 25);
-            ctx.lineTo(680, 25);
-            ctx.fillStyle = 'white'
-            ctx.fill();
+                ctx.beginPath();
+                ctx.moveTo(725, 275);
+                ctx.lineTo(725, 150);
+                ctx.lineTo(273, 150);
+                ctx.lineTo(259, 225);
+                ctx.lineTo(725, 225);
+                ctx.fillStyle = '#00112890'
+                ctx.fill();
 
-            ctx.beginPath();
-            ctx.moveTo(348 + 348 * (currentXp / nextXp), 275);
-            ctx.lineTo(348 + 348 * (currentXp / nextXp), 49);
-            ctx.lineTo(351, 49);
-            ctx.lineTo(351, 26);
-            ctx.lineTo(348 + 348 * (currentXp / nextXp), 26);
-            ctx.fillStyle = '#7287a7'
-            ctx.fill();
+                // For Display XP Start
+                ctx.beginPath();
+                ctx.moveTo(682, 275);
+                ctx.lineTo(682, 52);
+                ctx.lineTo(348, 52);
+                ctx.lineTo(348, 23);
+                ctx.lineTo(682, 23);
+                ctx.fillStyle = '#96a4b9'
+                ctx.fill();
 
-            // For Display XP Start End
+                ctx.beginPath();
+                ctx.moveTo(680, 275);
+                ctx.lineTo(680, 50);
+                ctx.lineTo(350, 50);
+                ctx.lineTo(350, 25);
+                ctx.lineTo(680, 25);
+                ctx.fillStyle = 'white'
+                ctx.fill();
 
-            ctx.font = "30px Arial";
-            ctx.fillStyle = "#fffffff9";
-            ctx.textAlign = 'right'
-            ctx.fillText(`HM | ${message.author.username}`, 700, 200);
+                ctx.beginPath();
+                ctx.moveTo(348 + 348 * (currentXp / nextXp), 275);
+                ctx.lineTo(348 + 348 * (currentXp / nextXp), 49);
+                ctx.lineTo(351, 49);
+                ctx.lineTo(351, 26);
+                ctx.lineTo(348 + 348 * (currentXp / nextXp), 26);
+                ctx.fillStyle = '#7287a7'
+                ctx.fill();
 
-            ctx.font = "16px Arial";
-            ctx.fillStyle = "#fffffff9";
-            ctx.textAlign = 'right'
-            ctx.fillText("New Heaven - Server MineCraft Việt Nam", 710, 260);
+                // For Display XP Start End
 
-            // XP display
-            ctx.font = "16px Consolas";
-            ctx.fillStyle = "black";
-            ctx.fillText(`XP: ${currentXp} / ${nextXp}`, 580, 43);
+                ctx.font = "30px Arial";
+                ctx.fillStyle = "#fffffff9";
+                ctx.textAlign = 'right'
+                ctx.fillText(`HM | ${message.author.username}`, 700, 200);
 
-            // Hiển thị LEVEL
-            ctx.font = "bold 15px Arial";
-            ctx.fillStyle = "#fffffff9";
-            ctx.fillText("LEVEL", 410, 78);
+                ctx.font = "16px Arial";
+                ctx.fillStyle = "#fffffff9";
+                ctx.textAlign = 'right'
+                ctx.fillText("New Heaven - Server MineCraft Việt Nam", 710, 260);
 
-            ctx.font = "48px Arial";
-            ctx.fillStyle = "#fffffff9";
-            ctx.fillText(level[uid]['level'], 397, 125);
+                // XP display
+                ctx.font = "16px Consolas";
+                ctx.fillStyle = "black";
+                ctx.fillText(`XP: ${currentXp} / ${nextXp}`, 580, 43);
 
-            const attachment = new Attachment(canvas.toBuffer(), `level.png`);
-            message.channel.send(attachment);
+                // Hiển thị LEVEL
+                ctx.font = "bold 15px Arial";
+                ctx.fillStyle = "#fffffff9";
+                ctx.fillText("LEVEL", 410, 78);
+
+                ctx.font = "48px Arial";
+                ctx.fillStyle = "#fffffff9";
+                ctx.fillText(level[uid]['level'], 397, 125);
+
+                const attachment = new Attachment(canvas.toBuffer(), `level.png`);
+                message.channel.send(attachment);
+            }
 
             break;
 
 
         case 'test':
+            console.info(message.content);
+            console.info(args);
             break;
 
         case '2781998':
