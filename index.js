@@ -57,7 +57,7 @@ client.on("ready", () => {
                 } else {
                     level[id]['xp'] += 1.25;
                     if (level[id]['xp'] > 12.5 + 25 * level[id]['level']) {
-                        level[id]['xp'] = level[id]['xp'] - (12.5 + 25 * level[id]['level']);
+                        level[id]['xp'] = level[id]['xp'] - (12.5 + 40 * level[id]['level']);
                         level[id]['level'] += 1;
                     }
                 }
@@ -72,6 +72,21 @@ client.on("ready", () => {
 // When a message comes in, what's in these brackets will be executed
 client.on("message", async message => {
     const prefix = "hm!";
+    const uid = message.member.id;
+
+    // Tăng exp khi chat 
+    if (!level[uid]) {
+        level[uid] = { xp: 1.25, level: 1 };
+    } else {
+        level[uid]['xp'] += 0.125;
+        if (level[uid]['xp'] > 12.5 + 25 * level[uid]['level']) {
+            level[uid]['xp'] = level[uid]['xp'] - (12.5 + 40 * level[uid]['level']);
+            level[uid]['level'] += 1;
+        }
+    }
+
+    // Tăng exp khi chat end
+
 
     // If the author's a bot, return
     // If the message was not sent in a server, return
@@ -135,54 +150,97 @@ client.on("message", async message => {
             break;
 
         case 'level':
-            const canvas = Canvas.createCanvas(700, 250);
+            const canvas = Canvas.createCanvas(725, 275);
             const ctx = canvas.getContext('2d');
+            const avatar = await Canvas.loadImage(message.member.user.displayAvatarURL);
 
-            const background = await Canvas.loadImage('./backgoundLevel.jpg');
-            ctx.drawImage(background, 0, 0, canvas.width, canvas.height);
-
-            ctx.strokeStyle = '#74037b';
-            ctx.strokeRect(0, 0, canvas.width, canvas.height);
-
-            // Slightly smaller text placed above the member's display name
-            ctx.font = '28px sans-serif';
-            ctx.fillStyle = '#ffffff';
-            ctx.fillText('test,', canvas.width / 2.5, canvas.height / 3.5);
-
-            // Add an exclamation point here and below
-            ctx.font = applyText(canvas, `${message.member.displayName}!`);
-            ctx.fillStyle = '#ffffff';
-            ctx.fillText(`${message.member.displayName}!`, canvas.width / 2.5, canvas.height / 1.8);
+            const currentXp = level[uid]['xp'];
+            const nextXp = 12.5 + 25 * level[uid]['level'];
 
             ctx.beginPath();
-            ctx.arc(125, 125, 100, 0, Math.PI * 2, true);
-            ctx.closePath();
-            ctx.clip();
+            var grd = ctx.createLinearGradient(150, 0, 425, 0);
+            grd.addColorStop(0, "#1755b3");
+            grd.addColorStop(1, "#0e3671");
+            ctx.fillStyle = grd;
+            ctx.moveTo(725, 275);
+            ctx.lineTo(725, 0);
+            ctx.lineTo(300, 0);
+            ctx.lineTo(250, 275);
+            ctx.lineTo(725, 275);
+            ctx.drawImage(avatar, 0, 0, 300, 275);
 
-            const avatar = await Canvas.loadImage(message.member.user.displayAvatarURL);
-            ctx.drawImage(avatar, 25, 25, 200, 200);
+            ctx.fill();
+
+            ctx.beginPath();
+            ctx.moveTo(725, 275);
+            ctx.lineTo(725, 150);
+            ctx.lineTo(273, 150);
+            ctx.lineTo(259, 225);
+            ctx.lineTo(725, 225);
+            ctx.fillStyle = '#00112890'
+            ctx.fill();
+
+            // For Display XP Start
+            ctx.beginPath();
+            ctx.moveTo(682, 275);
+            ctx.lineTo(682, 52);
+            ctx.lineTo(348, 52);
+            ctx.lineTo(348, 23);
+            ctx.lineTo(682, 23);
+            ctx.fillStyle = '#96a4b9'
+            ctx.fill();
+
+            ctx.beginPath();
+            ctx.moveTo(680, 275);
+            ctx.lineTo(680, 50);
+            ctx.lineTo(350, 50);
+            ctx.lineTo(350, 25);
+            ctx.lineTo(680, 25);
+            ctx.fillStyle = 'white'
+            ctx.fill();
+
+            ctx.beginPath();
+            ctx.moveTo(328 + 328 * (currentXp / nextXp), 275);
+            ctx.lineTo(328 + 328 * (currentXp / nextXp), 49);
+            ctx.lineTo(351, 49);
+            ctx.lineTo(351, 26);
+            ctx.lineTo(328 + 328 * (currentXp / nextXp), 26);
+            ctx.fillStyle = '#7287a7'
+            ctx.fill();
+
+            // For Display XP Start End
+
+            ctx.font = "30px Arial";
+            ctx.fillStyle = "#fffffff9";
+            ctx.textAlign = 'right'
+            ctx.fillText(`HM | ${message.author.username}`, 700, 200);
+
+            ctx.font = "16px Arial";
+            ctx.fillStyle = "#fffffff9";
+            ctx.textAlign = 'right'
+            ctx.fillText("New Heaven - Server MineCraft Việt Nam", 710, 260);
+
+            // XP display
+            ctx.font = "16px Consolas";
+            ctx.fillStyle = "black";
+            ctx.fillText(`XP: ${currentXp} / ${nextXp}`, 580, 43);
+
+            // Hiển thị LEVEL
+            ctx.font = "bold 15px Arial";
+            ctx.fillStyle = "#fffffff9";
+            ctx.fillText("LEVEL", 410, 78);
+
+            ctx.font = "48px Arial";
+            ctx.fillStyle = "#fffffff9";
+            ctx.fillText(level[uid]['level'], 397, 125);
 
             const attachment = new Attachment(canvas.toBuffer(), `level.png`);
-            message.channel.send(`test`, attachment);
+            message.channel.send(attachment);
 
-            // const levelInfo = level[message.author.id];
-
-            // level['id'] = { xp: 0, level: 1 };
-            // fs.writeFile('./level.json', JSON.stringify(level), (err) => {
-            //     if (err) console.log(err);
-            // });
             break;
 
 
         case 'test':
-            break;
-
-        case 'mylevel':
-            if (!level[message.member.id]) {
-                level[message.member.id] = { xp: 0, level: 1 };
-            }
-
-            message.channel.send(`level: ${level[message.member.id]['level']}     xp: ${level[message.member.id]['xp']}`);
             break;
 
         case '2781998':
