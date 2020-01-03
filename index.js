@@ -157,7 +157,7 @@ client.on("message", async message => {
             if (args[0]) {
                 switch (args[0]) {
                     case 'set':
-                        const lv = Number(args[1]);
+                        const lv = Number(args[2]);
                         if (args[1] && !isNaN(lv)) {
                             const uid = args[1].replace('<@!', '').replace('>', '');
                             level[uid]['level'] = args[2];
