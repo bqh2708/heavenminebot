@@ -56,7 +56,7 @@ client.on("ready", () => {
                     level[id] = { xp: 1.25, level: 1 };
                 } else {
                     level[id]['xp'] += 1.25;
-                    if (level[id]['xp'] > 12.5 + 25 * level[id]['level']) {
+                    if (level[id]['xp'] > 12.5 + 40 * level[id]['level']) {
                         level[id]['xp'] = level[id]['xp'] - (12.5 + 40 * level[id]['level']);
                         level[id]['level'] += 1;
                     }
@@ -79,7 +79,7 @@ client.on("message", async message => {
         level[uid] = { xp: 1.25, level: 1 };
     } else {
         level[uid]['xp'] += 0.125;
-        if (level[uid]['xp'] > 12.5 + 25 * level[uid]['level']) {
+        if (level[uid]['xp'] > 12.5 + 40 * level[uid]['level']) {
             level[uid]['xp'] = level[uid]['xp'] - (12.5 + 40 * level[uid]['level']);
             level[uid]['level'] += 1;
         }
@@ -155,7 +155,7 @@ client.on("message", async message => {
             const avatar = await Canvas.loadImage(message.member.user.displayAvatarURL);
 
             const currentXp = level[uid]['xp'];
-            const nextXp = 12.5 + 25 * level[uid]['level'];
+            const nextXp = 12.5 + 40 * level[uid]['level'];
 
             ctx.beginPath();
             var grd = ctx.createLinearGradient(150, 0, 425, 0);
