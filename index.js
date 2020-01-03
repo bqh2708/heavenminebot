@@ -200,11 +200,11 @@ client.on("message", async message => {
             ctx.fill();
 
             ctx.beginPath();
-            ctx.moveTo(328 + 328 * (currentXp / nextXp), 275);
-            ctx.lineTo(328 + 328 * (currentXp / nextXp), 49);
+            ctx.moveTo(348 + 348 * (currentXp / nextXp), 275);
+            ctx.lineTo(348 + 348 * (currentXp / nextXp), 49);
             ctx.lineTo(351, 49);
             ctx.lineTo(351, 26);
-            ctx.lineTo(328 + 328 * (currentXp / nextXp), 26);
+            ctx.lineTo(348 + 348 * (currentXp / nextXp), 26);
             ctx.fillStyle = '#7287a7'
             ctx.fill();
 
