@@ -18,23 +18,6 @@ const guild = new Guild({
     disableEveryone: true
 });
 
-// Pass the entire Canvas object because you'll need to access its width, as well its context
-const applyText = (canvas, text) => {
-    const ctx = canvas.getContext('2d');
-
-    // Declare a base size of the font
-    let fontSize = 70;
-
-    do {
-        // Assign the font to the context and decrement it so it can be measured again
-        ctx.font = `${fontSize -= 10}px sans-serif`;
-        // Compare pixel width of the text to the canvas minus the approximate avatar size
-    } while (ctx.measureText(text).width > canvas.width - 300);
-
-    // Return the result to use in the actual canvas
-    return ctx.font;
-};
-
 // When the bot's online, what's in these brackets will be executed
 client.on("ready", () => {
     console.log(`Hi, ${client.user.username} is now online!`);
@@ -67,6 +50,15 @@ client.on("ready", () => {
             }
         }
     }, 60000);
+
+
+    // test
+    // var JSONItems = [];
+    // $.get("./level.json", function (data) {
+    //     JSONItems = JSON.parse(data);
+    //     console.log(JSONItems);
+    // });
+
 })
 
 // When a message comes in, what's in these brackets will be executed
@@ -78,7 +70,7 @@ client.on("message", async message => {
     if (!level[uid]) {
         level[uid] = { xp: 1.25, level: 1 };
     } else {
-        level[uid]['xp'] += 0.125;
+        level[uid]['xp'] += 0.0625;
         if (level[uid]['xp'] > 12.5 + 40 * level[uid]['level']) {
             level[uid]['xp'] = level[uid]['xp'] - (12.5 + 40 * level[uid]['level']);
             level[uid]['level'] += 1;
@@ -178,7 +170,10 @@ client.on("message", async message => {
             } else {
                 const canvas = Canvas.createCanvas(725, 275);
                 const ctx = canvas.getContext('2d');
-                const avatar = await Canvas.loadImage(message.member.user.displayAvatarURL);
+                const avatar = message.member.user.displayAvatarURL !== 'https://discordapp.com/assets/6debd47ed13483642cf09e832ed0bc1b.png' ? await Canvas.loadImage(message.member.user.displayAvatarURL)
+                    : await Canvas.loadImage('./avatarDefault.jpg');
+
+                console.info(message.member.user.displayAvatarURL);
 
                 const currentXp = level[uid]['xp'];
                 const nextXp = 12.5 + 40 * level[uid]['level'];
@@ -297,3 +292,14 @@ client.on('guildMemberUpdate', (oldData, newData) => {
 
 // Login the bot
 client.login(process.env.TOKEN);
+
+function GetSortOrder(prop) {
+    return function (a, b) {
+        if (a[prop] > b[prop]) {
+            return 1;
+        } else if (a[prop] < b[prop]) {
+            return -1;
+        }
+        return 0;
+    }
+}  
