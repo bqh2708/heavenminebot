@@ -195,11 +195,11 @@ client.on("message", async message => {
                     case 'top':
                         level['level'].sort(GetSortOrder('level'));
 
-                        const top1 = level['level'][0] ? `<@!${level['level'][0].uid}>` : '';
-                        const top2 = level['level'][1] ? `<@!${level['level'][1].uid}>` : '';
-                        const top3 = level['level'][2] ? `<@!${level['level'][2].uid}>` : '';
-                        const top4 = level['level'][3] ? `<@!${level['level'][3].uid}>` : '';
-                        const top5 = level['level'][4] ? `<@!${level['level'][4].uid}>` : '';
+                        const top1 = level['level'][0] ? `<@!${level['level'][0].uid}> - Level: ${level['level'][0].level}` : '';
+                        const top2 = level['level'][1] ? `<@!${level['level'][1].uid}> - Level: ${level['level'][1].level}` : '';
+                        const top3 = level['level'][2] ? `<@!${level['level'][2].uid}> - Level: ${level['level'][2].level}` : '';
+                        const top4 = level['level'][3] ? `<@!${level['level'][3].uid}> - Level: ${level['level'][3].level}` : '';
+                        const top5 = level['level'][4] ? `<@!${level['level'][4].uid}> - Level: ${level['level'][4].level}` : '';
 
                         const embedTop = new RichEmbed()
                             .setColor("#98D989")
