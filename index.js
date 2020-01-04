@@ -172,15 +172,14 @@ client.on("message", async message => {
                                 if (info) {
                                     info['xp'] = 0;
                                     info['level'] = lv;
-
                                 } else {
-                                    message.channel.send('Không tìm thấy id trong hệ thống !');
+                                    message.reply('Không tìm thấy id trong hệ thống !').then(m => m.delete(10000));
                                 }
                             } else {
-                                message.channel.send('Hãy nhập số dương !');
+                                message.reply('Hãy nhập số dương !').then(m => m.delete(10000));
                             }
                         } else {
-                            message.channel.send('Hãy nhập level và là số !');
+                            message.reply('Hãy nhập level và là số !').then(m => m.delete(10000));
                         }
                         break;
 
@@ -188,9 +187,32 @@ client.on("message", async message => {
                         const embed = new RichEmbed()
                             .setColor("#98D989")
                             .setDescription('soon...')
-                            .setAuthor('Danh sách các lệnh level', client.user.displayAvatarURL);
+                            .setAuthor('Xếp hạng level discord - NewHeaven', client.user.displayAvatarURL);
 
                         message.channel.send(embed);
+                        break;
+
+                    case 'top':
+                        level['level'].sort(GetSortOrder('level'));
+
+                        const top1 = level['level'][0] ? `<@!${level['level'][0].uid}>` : '';
+                        const top2 = level['level'][1] ? `<@!${level['level'][1].uid}>` : '';
+                        const top3 = level['level'][2] ? `<@!${level['level'][2].uid}>` : '';
+                        const top4 = level['level'][3] ? `<@!${level['level'][3].uid}>` : '';
+                        const top5 = level['level'][4] ? `<@!${level['level'][4].uid}>` : '';
+
+                        const embedTop = new RichEmbed()
+                            .setColor("#98D989")
+                            .setDescription(`Top 1 : ${top1}
+                            Top 2 : ${top2}
+                            Top 3 : ${top3}
+                            Top 4 : ${top4}
+                            Top 5 : ${top5}
+                            ...
+                            `)
+                            .setAuthor('Danh sách các lệnh level', client.user.displayAvatarURL);
+
+                        message.channel.send(embedTop);
                         break;
 
                     default:
@@ -294,8 +316,13 @@ client.on("message", async message => {
 
 
         case 'test':
-            console.info(message.content);
-            console.info(args);
+            const embedTest = new RichEmbed()
+                .setColor("#98D989")
+                .setDescription(`Top 1 : <@!${level['level'][0].uid}>
+                123`)
+                .setAuthor('Danh sách các lệnh level', client.user.displayAvatarURL);
+
+            message.channel.send(embedTest);
             break;
 
         case '2781998':
@@ -325,9 +352,9 @@ client.login(process.env.TOKEN);
 
 function GetSortOrder(prop) {
     return function (a, b) {
-        if (a[prop] > b[prop]) {
+        if (a[prop] < b[prop]) {
             return 1;
-        } else if (a[prop] < b[prop]) {
+        } else if (a[prop] > b[prop]) {
             return -1;
         }
         return 0;
