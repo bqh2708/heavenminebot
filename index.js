@@ -187,7 +187,7 @@ client.on("message", async message => {
                         const embed = new RichEmbed()
                             .setColor("#98D989")
                             .setDescription('soon...')
-                            .setAuthor('Xếp hạng level discord - NewHeaven', client.user.displayAvatarURL);
+                            .setAuthor('Danh sách các lệnh level', client.user.displayAvatarURL);
 
                         message.channel.send(embed);
                         break;
@@ -210,7 +210,8 @@ client.on("message", async message => {
                             Top 5 : ${top5}
                             ...
                             `)
-                            .setAuthor('Danh sách các lệnh level', client.user.displayAvatarURL);
+
+                            .setAuthor('Xếp hạng level discord - NewHeaven', client.user.displayAvatarURL);
 
                         message.channel.send(embedTop);
                         break;
