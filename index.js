@@ -34,23 +34,30 @@ client.on("ready", () => {
     setInterval(() => {
         const voiceChannels = client.channels.filter(c => c.type === 'voice');
         for (const [id, voiceChannel] of voiceChannels) {
-            for (const [id, member] of voiceChannel.members) {
-                if (!level[id]) {
-                    level[id] = { xp: 1.25, level: 1 };
+            for (const [uid, member] of voiceChannel.members) {
+                var info = level['level'].find(x => x.uid === uid);
+
+                if (!info) {
+                    info = {
+                        uid,
+                        xp: 1.25,
+                        level: 1
+                    }
+                    level['level'].push(info);
                 } else {
-                    level[id]['xp'] += 1.25;
-                    if (level[id]['xp'] > 12.5 + 40 * level[id]['level']) {
-                        level[id]['xp'] = level[id]['xp'] - (12.5 + 40 * level[id]['level']);
-                        level[id]['level'] += 1;
+                    info['xp'] += 1.25;
+                    if (info['xp'] > 12.5 + 40 * info['level']) {
+                        info['xp'] = info['xp'] - (12.5 + 40 * info['level']);
+                        info['level'] += 1;
                     }
                 }
-                fs.writeFile('./level.json', JSON.stringify(level), (err) => {
-                    if (err) console.log(err);
-                });
             }
         }
-    }, 60000);
 
+        fs.writeFile('./level.json', JSON.stringify(level), (err) => {
+            if (err) console.log(err);
+        });
+    }, 60000);
 
     // test
     // var JSONItems = [];
@@ -67,20 +74,27 @@ client.on("message", async message => {
     const uid = message.member.id;
 
     // Tăng exp khi chat 
-    if (!level[uid]) {
-        level[uid] = { xp: 1.25, level: 1 };
+    var info = level['level'].find(x => x.uid === uid);
+
+    if (info) {
+        info['xp'] += 0.0625;
+        if (info['xp'] > 12.5 + 40 * info['level']) {
+            info['xp'] = info['xp'] - (12.5 + 40 * info['level']);
+            info['level'] += 1;
+        }
     } else {
-        level[uid]['xp'] += 0.0625;
-        if (level[uid]['xp'] > 12.5 + 40 * level[uid]['level']) {
-            level[uid]['xp'] = level[uid]['xp'] - (12.5 + 40 * level[uid]['level']);
-            level[uid]['level'] += 1;
+        info = {
+            uid,
+            xp: 1.25,
+            level: 1
         }
 
-        fs.writeFile('./level.json', JSON.stringify(level), (err) => {
-            if (err) console.log(err);
-        });
+        level['level'].push(info);
     }
 
+    fs.writeFile('./level.json', JSON.stringify(level), (err) => {
+        if (err) console.log(err);
+    });
     // Tăng exp khi chat end
 
 
@@ -151,20 +165,36 @@ client.on("message", async message => {
                     case 'set':
                         const lv = Number(args[2]);
                         if (args[1] && !isNaN(lv)) {
-                            const uid = args[1].replace('<@!', '').replace('>', '');
-                            level[uid]['level'] = args[2];
-                            level[uid]['xp'] = 0;
+                            if (lv > 0) {
+                                const uid = args[1].replace('<@!', '').replace('>', '');
+                                var info = level['level'].find(x => x.uid === uid);
 
-                            fs.writeFile('./level.json', JSON.stringify(level), (err) => {
-                                if (err) console.log(err);
-                            });
+                                if (info) {
+                                    info['xp'] = 0;
+                                    info['level'] = lv;
+
+                                } else {
+                                    message.channel.send('Không tìm thấy id trong hệ thống !');
+                                }
+                            } else {
+                                message.channel.send('Hãy nhập số dương !');
+                            }
                         } else {
                             message.channel.send('Hãy nhập level và là số !');
                         }
                         break;
 
+                    case 'help':
+                        const embed = new RichEmbed()
+                            .setColor("#98D989")
+                            .setDescription('soon...')
+                            .setAuthor('Danh sách các lệnh level', client.user.displayAvatarURL);
+
+                        message.channel.send(embed);
+                        break;
+
                     default:
-                        message.reply(`Unknow Command`).then(m => m.delete(5000));
+                        message.reply('Hãy sử dụng `hm! level help` để biết thêm về các lệnh !').then(m => m.delete(10000));
                         break;
                 }
             } else {
@@ -173,10 +203,10 @@ client.on("message", async message => {
                 const avatar = message.member.user.displayAvatarURL !== 'https://discordapp.com/assets/6debd47ed13483642cf09e832ed0bc1b.png' ? await Canvas.loadImage(message.member.user.displayAvatarURL)
                     : await Canvas.loadImage('./avatarDefault.jpg');
 
-                console.info(message.member.user.displayAvatarURL);
+                var info = level['level'].find(x => x.uid === uid);
 
-                const currentXp = level[uid]['xp'];
-                const nextXp = 12.5 + 40 * level[uid]['level'];
+                const currentXp = info['xp'];
+                const nextXp = 12.5 + 40 * info['level'];
 
                 ctx.beginPath();
                 var grd = ctx.createLinearGradient(150, 0, 425, 0);
@@ -253,7 +283,8 @@ client.on("message", async message => {
 
                 ctx.font = "48px Arial";
                 ctx.fillStyle = "#fffffff9";
-                ctx.fillText(level[uid]['level'], 397, 125);
+                ctx.textAlign = 'center'
+                ctx.fillText(info['level'], 385, 125);
 
                 const attachment = new Attachment(canvas.toBuffer(), `level.png`);
                 message.channel.send(attachment);
@@ -275,7 +306,6 @@ client.on("message", async message => {
             message.channel.send('Hãy sử dụng `hm! help` để biết thêm về các lệnh !');
             break;
     }
-
 
 });
 
