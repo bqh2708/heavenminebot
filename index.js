@@ -163,7 +163,7 @@ client.on("message", async message => {
             if (args[0]) {
                 switch (args[0]) {
                     case 'set':
-                        const lv = Number(args[2]);
+                        const lv = Number(args[2]).toFixed(0);
                         if (args[1] && !isNaN(lv)) {
                             if (lv > 0) {
                                 const uid = args[1].replace('<@!', '').replace('>', '');
