@@ -36,7 +36,7 @@ client.on("ready", () => {
         for (const [id, voiceChannel] of voiceChannels) {
             for (const [uid, member] of voiceChannel.members) {
                 var info = level['level'].find(x => x.uid === uid);
-                upExp(info, 1.25)
+                upExp(info, 1.25, uid)
             }
         }
 
@@ -61,7 +61,7 @@ client.on("message", async message => {
 
     // Tăng exp khi chat 
     var info = level['level'].find(x => x.uid === uid);
-    upExp(info, 0.0625);
+    upExp(info, 0.0625, uid);
     // Tăng exp khi chat end
 
 
@@ -195,7 +195,7 @@ client.on("message", async message => {
                 var info = level['level'].find(x => x.uid === uid);
 
                 const currentXp = info['xp'];
-                const nextXp = 52.25 + 40 * info['level'];
+                const nextXp = 42.25 + 40 * info['level'];
 
                 ctx.beginPath();
                 var grd = ctx.createLinearGradient(150, 0, 425, 0);
@@ -331,7 +331,7 @@ function GetSortOrder(prop) {
     }
 }
 
-function upExp(info, exp) {
+function upExp(info, exp, uid) {
     if (info && info['uid'] === '661762216105738261') {
         return;
     }
@@ -345,8 +345,8 @@ function upExp(info, exp) {
         level['level'].push(info);
     } else {
         info['xp'] += exp;
-        if (info['xp'] > 52.25 + 40 * info['level']) {
-            info['xp'] = info['xp'] - (52.25 + 40 * info['level']);
+        if (info['xp'] > 42.25 + 40 * info['level']) {
+            info['xp'] = info['xp'] - (42.25 + 40 * info['level']);
             info['level'] += 1;
         }
     }
