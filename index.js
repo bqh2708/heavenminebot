@@ -36,21 +36,7 @@ client.on("ready", () => {
         for (const [id, voiceChannel] of voiceChannels) {
             for (const [uid, member] of voiceChannel.members) {
                 var info = level['level'].find(x => x.uid === uid);
-
-                if (!info) {
-                    info = {
-                        uid,
-                        xp: 1.25,
-                        level: 1
-                    }
-                    level['level'].push(info);
-                } else {
-                    info['xp'] += 1.25;
-                    if (info['xp'] > 12.5 + 40 * info['level']) {
-                        info['xp'] = info['xp'] - (12.5 + 40 * info['level']);
-                        info['level'] += 1;
-                    }
-                }
+                upExp(info, 1.25)
             }
         }
 
@@ -75,26 +61,7 @@ client.on("message", async message => {
 
     // Tăng exp khi chat 
     var info = level['level'].find(x => x.uid === uid);
-
-    if (info) {
-        info['xp'] += 0.0625;
-        if (info['xp'] > 12.5 + 40 * info['level']) {
-            info['xp'] = info['xp'] - (12.5 + 40 * info['level']);
-            info['level'] += 1;
-        }
-    } else {
-        info = {
-            uid,
-            xp: 1.25,
-            level: 1
-        }
-
-        level['level'].push(info);
-    }
-
-    fs.writeFile('./level.json', JSON.stringify(level), (err) => {
-        if (err) console.log(err);
-    });
+    upExp(info, 0.0625);
     // Tăng exp khi chat end
 
 
@@ -168,7 +135,6 @@ client.on("message", async message => {
                             if (lv > 0) {
                                 const uid = args[1].replace('<@!', '').replace('>', '');
                                 var info = level['level'].find(x => x.uid === uid);
-
                                 if (info) {
                                     info['xp'] = 0;
                                     info['level'] = lv;
@@ -229,7 +195,7 @@ client.on("message", async message => {
                 var info = level['level'].find(x => x.uid === uid);
 
                 const currentXp = info['xp'];
-                const nextXp = 12.5 + 40 * info['level'];
+                const nextXp = 52.25 + 40 * info['level'];
 
                 ctx.beginPath();
                 var grd = ctx.createLinearGradient(150, 0, 425, 0);
@@ -335,6 +301,10 @@ client.on("message", async message => {
             break;
     }
 
+    fs.writeFile('./level.json', JSON.stringify(level), (err) => {
+        if (err) console.log(err);
+    });
+
 });
 
 client.on('guildMemberUpdate', (oldData, newData) => {
@@ -346,7 +316,6 @@ client.on('guildMemberUpdate', (oldData, newData) => {
 
     }
 })
-
 
 // Login the bot
 client.login(process.env.TOKEN);
@@ -360,4 +329,25 @@ function GetSortOrder(prop) {
         }
         return 0;
     }
-}  
+}
+
+function upExp(info, exp) {
+    if (info && info['uid'] === '661762216105738261') {
+        return;
+    }
+
+    if (!info) {
+        info = {
+            uid,
+            xp: exp,
+            level: 1
+        }
+        level['level'].push(info);
+    } else {
+        info['xp'] += exp;
+        if (info['xp'] > 52.25 + 40 * info['level']) {
+            info['xp'] = info['xp'] - (52.25 + 40 * info['level']);
+            info['level'] += 1;
+        }
+    }
+}
