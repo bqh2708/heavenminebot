@@ -332,7 +332,7 @@ function GetSortOrder(prop) {
 }
 
 function upExp(info, exp, uid) {
-    if (info && info['uid'] === '661762216105738261') {
+    if (uid === '661762216105738261') {
         return;
     }
 
