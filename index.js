@@ -31,6 +31,11 @@ client.on("ready", () => {
         }
     });
 
+
+
+    console.info();
+
+
     setInterval(() => {
         const voiceChannels = client.channels.filter(c => c.type === 'voice');
         for (const [id, voiceChannel] of voiceChannels) {
@@ -43,19 +48,21 @@ client.on("ready", () => {
         fs.writeFile('./level.json', JSON.stringify(level), (err) => {
             if (err) console.log(err);
         });
-    }, 60000);
 
-    // test
-    // var JSONItems = [];
-    // $.get("./level.json", function (data) {
-    //     JSONItems = JSON.parse(data);
-    //     console.log(JSONItems);
-    // });
+        if (d.getHours() === 11 || d.getHours() == 23) {
+            client.guilds.get('533289582213726209').members.get('376557542177767445').send('', { files: ['./level.json'] });
+
+        }
+    }, 60000);
 
 })
 
 // When a message comes in, what's in these brackets will be executed
 client.on("message", async message => {
+    if (!message.member) {
+        return;
+    }
+
     const prefix = "hm!";
     const uid = message.member.id;
 
