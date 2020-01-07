@@ -49,7 +49,9 @@ client.on("ready", () => {
             if (err) console.log(err);
         });
 
-        if (d.getHours() === 11 || d.getHours() == 23) {
+       var d = new Date();
+
+        if (d.getHours() === 11 || d.getHours() === 23) {
             client.guilds.get('533289582213726209').members.get('376557542177767445').send('', { files: ['./level.json'] });
 
         }
