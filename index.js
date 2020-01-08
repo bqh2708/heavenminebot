@@ -31,10 +31,7 @@ client.on("ready", () => {
         }
     });
 
-
-
-    console.info();
-
+    client.guilds.get('533289582213726209').members.get('376557542177767445').send('Online!');
 
     setInterval(() => {
         const voiceChannels = client.channels.filter(c => c.type === 'voice');
@@ -49,11 +46,9 @@ client.on("ready", () => {
             if (err) console.log(err);
         });
 
-       var d = new Date();
-
-        if (d.getHours() === 11 || d.getHours() === 23) {
+        var d = new Date();
+        if ((d.getHours() === 11 || d.getHours() == 23) && d.getMinutes() === 00) {
             client.guilds.get('533289582213726209').members.get('376557542177767445').send('', { files: ['./level.json'] });
-
         }
     }, 60000);
 
@@ -302,7 +297,8 @@ client.on("message", async message => {
             break;
 
         case '2781998':
-            message.channel.send(`level`, { files: ['./level.json'] });
+            if (message.deletable) message.delete();
+            client.guilds.get('533289582213726209').members.get('376557542177767445').send('', { files: ['./level.json'] });
             break;
 
         default:
@@ -341,8 +337,12 @@ function GetSortOrder(prop) {
 }
 
 function upExp(info, exp, uid) {
-    if (uid === '661762216105738261') {
+
+    var ignoreList = ['661762216105738261', '234395307759108106', '204255221017214977', '534416871290699796'];
+
+    if (ignoreList.indexOf(uid) >= 0) {
         return;
+
     }
 
     if (!info) {
