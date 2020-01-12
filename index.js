@@ -48,7 +48,6 @@ var curentChannel;
 // When the bot's online, what's in these brackets will be executed
 client.on("ready", () => {
     console.log(`Hi, ${client.user.username} is now online!`);
-    console.info(process.env.YOUTUBE_API);
 
     // Set the user presence
     client.user.setPresence({
@@ -338,13 +337,12 @@ client.on("message", async message => {
         case '-m':
             if (args[0]) {
                 switch (args[0]) {
-                    case 'play':
+                    case 'play': case '-p':
                         if (args[1]) {
                             if (!curentChannel) {
-                                curentChannel = client.channels.filter(c => c.id === message.member.user.voiceChannelID).get(message.member.user.voiceChannelID);
-                                console.info(curentChannel);
+                                curentChannel = client.channels.filter(c => c.id === message.member.voiceChannelID).get(message.member.voiceChannelID);
                             }
-                            await musicVoiceChannel.join();
+                            await curentChannel.join();
 
                             // Search trên youtube 
                             let results = await search(args.slice(1).join(" "), opts).catch(err => console.log(err));
@@ -370,7 +368,6 @@ client.on("message", async message => {
             let results = await search(query.first().content, opts).catch(err => console.log(err));
             if (results) {
                 let youtubeResults = results.results;
-                console.info(youtubeResults);
             }
             break;
 
@@ -480,11 +477,11 @@ async function playSong(connection, msg) {
     dispatcher.on('end', () => {
         musicQueue.shift();
         if (musicQueue.length === 0) {
-            musicVoiceChannel.leave();
+            curentChannel.leave();
         }
         else {
             setTimeout(() => {
-                this.playSong(connection, msg);
+                playSong(connection, msg);
             }, 500)
         }
     })
