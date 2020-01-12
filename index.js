@@ -4,6 +4,13 @@ const { config } = require("dotenv");
 var fs = require('fs');
 let level = require("./level.json");
 const Canvas = require('canvas');
+const commando = require('discord.js-commando');
+
+const streamOptions = {
+    seek: 0,
+    volume: 1
+}
+var musicQueue = [];
 
 config({
     path: __dirname + "/.env"
@@ -19,7 +26,6 @@ const guild = new Guild({
 });
 
 const ytdl = require("ytdl-core");
-const ffmpeg = require("ffmpeg")
 
 var queue = new Map();
 
@@ -320,9 +326,8 @@ client.on("message", async message => {
                 switch (args[0]) {
                     case 'play':
                         if (args[1]) {
-                            console.info(musicChannel);
                             await musicChannel.join();
-                            play(message, serverQueue)
+                            run(message, args[1]);
                         }
                 }
             } else {
@@ -395,67 +400,45 @@ function upExp(info, exp, uid) {
     }
 }
 
-async function play(message, serverQueue) {
-    const args = message.content.split(" ");
-
-    const voiceChannel = message.member.voiceChannel;
-    if (!voiceChannel) return message.reply("You must be in a voice channel!");
-    const permission = voiceChannel.permissionsFor(message.client.user);
-    if (!permission.has('CONNECT') || !permission.has("SPEAK")) {
-        return message.channel.send("I need permission to join and speak in your voice channel!")
+async function run(msg, youtubeUrl) {
+    let embed = new discord.RichEmbed();
+    if (musicQueue.some(url => url === youtubeUrl)) {
+        embed.setDescription("Url is already in queue.");
     }
-
-    const songInfo = await ytdl.getInfo(args[3]);
-
-    const song = {
-        title: songInfo.title,
-        url: songInfo.video_url,
-    };
-
-    if (!serverQueue) {
-        const queueConstruct = {
-            textChannel: message.channel,
-            voiceChannel: voiceChannel,
-            connection: null,
-            songs: [],
-            volume: 5,
-            playing: true,
-        };
-        queue.set(message.guild.id, queueConstruct);
-
-        queueConstruct.songs.push(song);
-
-        try {
-            var connection = await voiceChannel.join();
-            queueConstruct.connection = connection;
-            playSong(message.guild, queueConstruct.songs[0]);
-        } catch (err) {
-            console.log(err);
-            queue.delete(message.guild.id)
-            return message.channel.send("There was an error playing! " + err);
+    else if (ytdl.validateURL(youtubeUrl)) {
+        musicQueue.push(youtubeUrl);
+        let vc = msg.guild.channels.find(ch => ch.name.toLowerCase() === 'music' && ch.type === 'voice');
+        if (vc && vc.connection) {
+            if (!vc.connection.speaking) {
+                await this.playSong(vc.connection, msg);
+            }
+            else {
+                console.log(musicQueue);
+            }
         }
     } else {
-        serverQueue.songs.push(song);
-        return message.channel.send(`${song.title} has been added to the queue!`);
+        embed.setDescription("Invalid YouTube URL!");
     }
 }
 
-function playSong(guild, song) {
-    const serverQueue = queue.get(guild.id);
+async function playSong(connection, msg) {
+    const stream = ytdl(musicQueue[0], { filter: 'audioonly' });
+    console.log(musicQueue[0])
+    const dispatcher = connection.playStream(stream, streamOptions);
+    dispatcher.on('start', () => {
+        msg.channel.send("Playing song...");
+    });
 
-    if (!song) {
-        serverQueue.voiceChannel.leave();
-        queue.delete(guild.id);
-        return;
-    }
-
-    const dispatcher = serverQueue.connection.playStream(ytdl(song.url, { filter: 'audioonly' }))
-        .on('end', () => {
-            serverQueue.songs.shift();
-            playSong(guild, serverQueue.songs[0]);
-        })
-        .on('error', error => {
-            console.log(error);
-        })
-    dispatcher.setVolumeLogarithmic(serverQueue.volume / 5);
+    dispatcher.on('end', () => {
+        console.log("Finished song.");
+        musicQueue.shift();
+        if (musicQueue.length === 0) {
+            console.log("No more songs to be played...");
+        }
+        else {
+            setTimeout(() => {
+                this.playSong(connection, msg);
+            }, 500)
+        }
+    })
 }
