@@ -44,6 +44,7 @@ var musicChannel;
 // When the bot's online, what's in these brackets will be executed
 client.on("ready", () => {
     console.log(`Hi, ${client.user.username} is now online!`);
+    console.info(process.env.YOUTUBE_API);
 
     // Set the user presence
     client.user.setPresence({
