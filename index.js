@@ -8,7 +8,7 @@ const commando = require('discord.js-commando');
 const search = require('youtube-search');
 
 const opts = {
-    maxResults: 2,
+    maxResults: 1,
     key: process.env.YOUTUBE_API,
     type: 'video'
 };
@@ -335,7 +335,14 @@ client.on("message", async message => {
                     case 'play':
                         if (args[1]) {
                             await musicChannel.join();
-                            run(message, args[1]);
+
+                            // Search trên youtube 
+                            let results = await search(args.slice(1).join(" "), opts).catch(err => console.log(err));
+                            if (results) {
+                                let youtubeResults = results.results;
+
+                                run(message, youtubeResults[0].link)
+                            }
                         }
                 }
             } else {
