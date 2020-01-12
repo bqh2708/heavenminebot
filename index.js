@@ -466,8 +466,7 @@ async function playSong(connection, msg) {
         embed = new RichEmbed()
             .setColor("#98D989")
             .setTitle('Bài hát đang phát')
-            .setDescription(musicQueue[0].title)
-            .setURL(musicQueue[0].url);
+            .setDescription(musicQueue[0].title, musicQueue[0].url)
         musicTextChannel.send(embed);
     });
 
