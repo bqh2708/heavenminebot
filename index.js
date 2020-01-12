@@ -471,7 +471,7 @@ async function playSong(connection, msg) {
             .setDescription(`${musicQueue[0].title}
             Người đề xuất : 「<@!${musicQueue[0].authorId}}>」
             `);
-        musicTextChannel.send(embed);
+        msg.send(embed);
     });
 
     dispatcher.on('end', () => {
