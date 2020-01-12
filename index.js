@@ -345,6 +345,9 @@ client.on("message", async message => {
 
                             // Search trên youtube 
                             let results = await search(args.slice(1).join(" "), opts).catch(err => console.log(err));
+                            console.info(args);
+                            console.info(results);
+
                             if (results) {
                                 let youtubeResults = results.results;
                                 run(message, youtubeResults)
