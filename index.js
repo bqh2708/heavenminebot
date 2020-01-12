@@ -444,6 +444,7 @@ async function run(msg, result) {
     youtubeUrl = result[0].link;
     let title = result[0].title;
 
+
     let embed = new RichEmbed();
     if (musicQueue.some(x => x.url === youtubeUrl)) {
         embed.setDescription("Url is already in queue.");
@@ -451,7 +452,6 @@ async function run(msg, result) {
     else if (ytdl.validateURL(youtubeUrl)) {
         musicQueue.push({ title: title, url: youtubeUrl, authorId: msg.author.id });
         let vc = currentMusicChannel;
-        console.info(musicQueue);
         if (vc && vc.connection) {
             if (!vc.connection.speaking) {
                 await playSong(vc.connection, msg);
@@ -466,8 +466,8 @@ async function run(msg, result) {
 }
 
 async function playSong(connection, msg) {
+    console.info(musicQueue[0].url);
     const stream = ytdl(musicQueue[0].url, { filter: 'audioonly' });
-    console.info(stream);
     const dispatcher = connection.playStream(stream, streamOptions);
     dispatcher.on('start', () => {
         embed = new RichEmbed()
