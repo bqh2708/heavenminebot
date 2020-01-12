@@ -465,12 +465,12 @@ async function playSong(connection, msg) {
     const stream = ytdl(musicQueue[0].url, { filter: 'audioonly' });
     const dispatcher = connection.playStream(stream, streamOptions);
     dispatcher.on('start', () => {
+        confirm
         embed = new RichEmbed()
             .setColor("#98D989")
             .setTitle('Bài hát đang phát')
             .setDescription(`${musicQueue[0].title}
-            「<@!${musicQueue[0].authorId}>」`)
-            .setAuthor(msg.author.username, msg.author.displayAvatarURL);
+            「<@!${musicQueue[0].authorId}>」`);
         msg.channel.send(embed);
     });
 
