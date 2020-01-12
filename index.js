@@ -40,7 +40,8 @@ var commandBotChannel;
 
 var musicVoiceChannel;
 var musicTextChannel;
-var currentMusicChannel;
+
+534043453042982933
 
 
 // When the bot's online, what's in these brackets will be executed
@@ -338,16 +339,10 @@ client.on("message", async message => {
                 switch (args[0]) {
                     case 'play':
                         if (args[1]) {
-                            if (!currentMusicChannel) {
-                                currentMusicChannel = client.channels.filter(c => c.id === message.member.voiceChannelID).get(message.member.voiceChannelID);
-                                await currentMusicChannel.join();
-                            }
+                            await musicVoiceChannel.join();
 
                             // Search trên youtube 
                             let results = await search(args.slice(1).join(" "), opts).catch(err => console.log(err));
-                            console.info(args);
-                            console.info(results);
-
                             if (results) {
                                 let youtubeResults = results.results;
                                 run(message, youtubeResults)
@@ -444,14 +439,13 @@ async function run(msg, result) {
     youtubeUrl = result[0].link;
     let title = result[0].title;
 
-
     let embed = new RichEmbed();
     if (musicQueue.some(x => x.url === youtubeUrl)) {
         embed.setDescription("Url is already in queue.");
     }
     else if (ytdl.validateURL(youtubeUrl)) {
         musicQueue.push({ title: title, url: youtubeUrl, authorId: msg.author.id });
-        let vc = currentMusicChannel;
+        let vc = musicVoiceChannel;
         if (vc && vc.connection) {
             if (!vc.connection.speaking) {
                 await playSong(vc.connection, msg);
@@ -466,24 +460,21 @@ async function run(msg, result) {
 }
 
 async function playSong(connection, msg) {
-    console.info(musicQueue[0].url);
     const stream = ytdl(musicQueue[0].url, { filter: 'audioonly' });
     const dispatcher = connection.playStream(stream, streamOptions);
     dispatcher.on('start', () => {
         embed = new RichEmbed()
             .setColor("#98D989")
             .setTitle('Bài hát đang phát')
-            .setDescription(`${musicQueue[0].title}
-            Người đề xuất : 「<@!${musicQueue[0].authorId}}>」
-            `);
-        msg.send(embed);
+            .setDescription(musicQueue[0].title, musicQueue[0].url)
+
+        musicTextChannel.send(embed);
     });
 
     dispatcher.on('end', () => {
         musicQueue.shift();
         if (musicQueue.length === 0) {
-            currentMusicChannel.leave();
-            currentMusicChannel = null;
+            musicVoiceChannel.leave();
         }
         else {
             setTimeout(() => {
