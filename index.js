@@ -483,7 +483,15 @@ async function playSong(connection, msg) {
     });
 
     dispatcher.on('end', () => {
-        nextMusic(connection, msg)
+        musicQueue.shift();
+        if (musicQueue.length === 0) {
+            curentChannel.leave();
+        }
+        else {
+            setTimeout(() => {
+                playSong(connection, msg);
+            }, 500)
+        }
     })
 }
 
