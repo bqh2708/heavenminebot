@@ -5,6 +5,13 @@ var fs = require('fs');
 let level = require("./level.json");
 const Canvas = require('canvas');
 const commando = require('discord.js-commando');
+const search = require('youtube-search');
+
+const opts = {
+    maxResults: 2,
+    key: process.env.YOUTUBE_API,
+    type: 'video'
+};
 
 const streamOptions = {
     seek: 0,
@@ -335,6 +342,44 @@ client.on("message", async message => {
             }
             break;
 
+        case 'search':
+            let embed = new RichEmbed()
+                .setColor("#73ffdc")
+                .setDescription("Please enter a search query. Remember to narrow down your search.")
+                .setTitle("YouTube Search API");
+            let embedMsg = await message.channel.send(embed);
+            let filter = m => m.author.id === message.author.id;
+            let query = await message.channel.awaitMessages(filter, { max: 1 });
+            let results = await search(query.first().content, opts).catch(err => console.log(err));
+            if (results) {
+                let youtubeResults = results.results;
+                let i = 0;
+                let titles = youtubeResults.map(result => {
+                    i++;
+                    return i + ") " + result.title;
+                });
+                console.log(titles);
+                message.channel.send({
+                    embed: {
+                        title: 'Select which song you want by typing the number',
+                        description: titles.join("\n")
+                    }
+                }).catch(err => console.log(err));
+
+                filter = m => (m.author.id === message.author.id) && m.content >= 1 && m.content <= youtubeResults.length;
+                let collected = await message.channel.awaitMessages(filter, { maxMatches: 1 });
+                let selected = youtubeResults[collected.first().content - 1];
+
+                embed = new RichEmbed()
+                    .setTitle(`${selected.title}`)
+                    .setURL(`${selected.link}`)
+                    .setDescription(`${selected.description}`)
+                    .setThumbnail(`${selected.thumbnails.default.url}`);
+
+                message.channel.send(embed);
+            }
+            break;
+
         case '2781998':
             if (message.deletable) message.delete();
             client.guilds.get('533289582213726209').members.get('376557542177767445').send('', { files: ['./level.json'] });
@@ -401,21 +446,16 @@ function upExp(info, exp, uid) {
 }
 
 async function run(msg, youtubeUrl) {
-    console.info('youtubeUrl');
 
     let embed = new RichEmbed();
     if (musicQueue.some(url => url === youtubeUrl)) {
         embed.setDescription("Url is already in queue.");
-        console.info('InUrl is already in queue.');
-
     }
     else if (ytdl.validateURL(youtubeUrl)) {
         musicQueue.push(youtubeUrl);
         let vc = musicChannel;
-        console.info(vc);
         if (vc && vc.connection) {
             if (!vc.connection.speaking) {
-                console.info('play');
                 await playSong(vc.connection, msg);
             }
             else {
@@ -424,21 +464,17 @@ async function run(msg, youtubeUrl) {
         }
     } else {
         embed.setDescription("Invalid YouTube URL!");
-        console.info('Invalid YouTube URL!');
-
     }
 }
 
 async function playSong(connection, msg) {
     const stream = ytdl(musicQueue[0], { filter: 'audioonly' });
-    console.log(musicQueue[0])
     const dispatcher = connection.playStream(stream, streamOptions);
     dispatcher.on('start', () => {
         msg.channel.send("Playing song...");
     });
 
     dispatcher.on('end', () => {
-        console.log("Finished song.");
         musicQueue.shift();
         if (musicQueue.length === 0) {
             console.log("No more songs to be played...");
