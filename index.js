@@ -351,6 +351,13 @@ client.on("message", async message => {
                                 run(message, youtubeResults)
                             }
                         }
+                        break;
+                    case 'next':
+                        let vc = musicVoiceChannel;
+                        if (vc && vc.connection) {
+                            nextMusic(vc.connection, msg);
+                        }
+                        break;
                 }
             } else {
 
@@ -453,7 +460,7 @@ async function run(msg, result) {
                 await playSong(vc.connection, msg);
             }
             else {
-                console.log(musicQueue);
+                message.reply(`Đã thêm bài hát : ${title} vào danh sách phát !`).then(m => m.delete(5000));
             }
         }
     } else {
@@ -467,22 +474,27 @@ async function playSong(connection, msg) {
     dispatcher.on('start', () => {
         embed = new RichEmbed()
             .setColor("#98D989")
-            .setTitle('Bài hát đang phát')
+            .setTitle('Bài hát đang phát ♪♪')
             .setDescription(`${musicQueue[0].title}
-            Người đề xuất : 「<@!${musicQueue[0].authorId}>」
-            `);
+            「<@!${musicQueue[0].authorId}>」
+            `)
+            .setAuthor(msg.author.username, message.author.displayAvatarURL);
         msg.channel.send(embed);
     });
 
     dispatcher.on('end', () => {
-        musicQueue.shift();
-        if (musicQueue.length === 0) {
-            curentChannel.leave();
-        }
-        else {
-            setTimeout(() => {
-                playSong(connection, msg);
-            }, 500)
-        }
+        nextMusic(connection, msg)
     })
+}
+
+function nextMusic(connection, msg) {
+    musicQueue.shift();
+    if (musicQueue.length === 0) {
+        curentChannel.leave();
+    }
+    else {
+        setTimeout(() => {
+            playSong(connection, msg);
+        }, 500)
+    }
 }
