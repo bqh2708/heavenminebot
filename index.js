@@ -451,6 +451,7 @@ async function run(msg, result) {
     else if (ytdl.validateURL(youtubeUrl)) {
         musicQueue.push({ title: title, url: youtubeUrl, authorId: msg.author.id });
         let vc = currentMusicChannel;
+        console.info(vc);
         if (vc && vc.connection) {
             if (!vc.connection.speaking) {
                 await playSong(vc.connection, msg);
