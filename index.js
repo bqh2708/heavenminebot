@@ -401,16 +401,21 @@ function upExp(info, exp, uid) {
 }
 
 async function run(msg, youtubeUrl) {
+    console.info('youtubeUrl');
+
     let embed = new RichEmbed();
     if (musicQueue.some(url => url === youtubeUrl)) {
         embed.setDescription("Url is already in queue.");
+        console.info('InUrl is already in queue.');
+
     }
     else if (ytdl.validateURL(youtubeUrl)) {
         musicQueue.push(youtubeUrl);
         let vc = msg.guild.channels.find(ch => ch.name.toLowerCase() === 'music' && ch.type === 'voice');
         if (vc && vc.connection) {
             if (!vc.connection.speaking) {
-                await this.playSong(vc.connection, msg);
+                console.info('play');
+                await playSong(vc.connection, msg);
             }
             else {
                 console.log(musicQueue);
@@ -418,6 +423,8 @@ async function run(msg, youtubeUrl) {
         }
     } else {
         embed.setDescription("Invalid YouTube URL!");
+        console.info('Invalid YouTube URL!');
+
     }
 }
 
