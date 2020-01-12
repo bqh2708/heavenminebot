@@ -474,7 +474,7 @@ async function playSong(connection, msg) {
     dispatcher.on('end', () => {
         musicQueue.shift();
         if (musicQueue.length === 0) {
-            await musicVoiceChannel.leave();
+            musicVoiceChannel.leave();
         }
         else {
             setTimeout(() => {
