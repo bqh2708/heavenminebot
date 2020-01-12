@@ -18,6 +18,16 @@ const guild = new Guild({
     disableEveryone: true
 });
 
+const ytdl = require("ytdl-core");
+const ffmpeg = require("ffmpeg")
+
+var queue = new Map();
+
+var commandBotChannel;
+
+var musicChannel;
+
+
 // When the bot's online, what's in these brackets will be executed
 client.on("ready", () => {
     console.log(`Hi, ${client.user.username} is now online!`);
@@ -31,7 +41,13 @@ client.on("ready", () => {
         }
     });
 
-    client.guilds.get('533289582213726209').members.get('376557542177767445').send('Online!');
+    commandBotChannel = client.channels.filter(c => c.id === '665733268477444165').get('665733268477444165');
+
+    musicChannel = client.channels.filter(c => c.id === '533527442132828163').get('533527442132828163');
+
+    ;
+
+    // client.guilds.get('533289582213726209').members.get('376557542177767445').send('Online!');
 
     setInterval(() => {
         const voiceChannels = client.channels.filter(c => c.type === 'voice');
@@ -47,7 +63,7 @@ client.on("ready", () => {
         });
 
         var d = new Date();
-        if ((d.getHours() === 11 || d.getHours() == 23) && d.getMinutes() === 00) {
+        if ((d.getHours() === 6 || d.getHours() == 18) && d.getMinutes() === 00) {
             client.guilds.get('533289582213726209').members.get('376557542177767445').send('', { files: ['./level.json'] });
         }
     }, 60000);
@@ -59,6 +75,8 @@ client.on("message", async message => {
     if (!message.member) {
         return;
     }
+
+    const serverQueue = queue.get(message.guild.id);
 
     const prefix = "hm!";
     const uid = message.member.id;
@@ -185,7 +203,6 @@ client.on("message", async message => {
 
                         message.channel.send(embedTop);
                         break;
-
                     default:
                         message.reply('Hãy sử dụng `hm! level help` để biết thêm về các lệnh !').then(m => m.delete(10000));
                         break;
@@ -296,6 +313,23 @@ client.on("message", async message => {
             message.channel.send(embedTest);
             break;
 
+        /** Music Bot - NewHeaven */
+        case 'music':
+        case '-m':
+            if (args[0]) {
+                switch (args[0]) {
+                    case 'play':
+                        if (args[1]) {
+                            console.info(musicChannel);
+                            await musicChannel.join();
+                            play(message, serverQueue)
+                        }
+                }
+            } else {
+
+            }
+            break;
+
         case '2781998':
             if (message.deletable) message.delete();
             client.guilds.get('533289582213726209').members.get('376557542177767445').send('', { files: ['./level.json'] });
@@ -359,4 +393,69 @@ function upExp(info, exp, uid) {
             info['level'] += 1;
         }
     }
+}
+
+async function play(message, serverQueue) {
+    const args = message.content.split(" ");
+
+    const voiceChannel = message.member.voiceChannel;
+    if (!voiceChannel) return message.reply("You must be in a voice channel!");
+    const permission = voiceChannel.permissionsFor(message.client.user);
+    if (!permission.has('CONNECT') || !permission.has("SPEAK")) {
+        return message.channel.send("I need permission to join and speak in your voice channel!")
+    }
+
+    const songInfo = await ytdl.getInfo(args[3]);
+
+    const song = {
+        title: songInfo.title,
+        url: songInfo.video_url,
+    };
+
+    if (!serverQueue) {
+        const queueConstruct = {
+            textChannel: message.channel,
+            voiceChannel: voiceChannel,
+            connection: null,
+            songs: [],
+            volume: 5,
+            playing: true,
+        };
+        queue.set(message.guild.id, queueConstruct);
+
+        queueConstruct.songs.push(song);
+
+        try {
+            var connection = await voiceChannel.join();
+            queueConstruct.connection = connection;
+            playSong(message.guild, queueConstruct.songs[0]);
+        } catch (err) {
+            console.log(err);
+            queue.delete(message.guild.id)
+            return message.channel.send("There was an error playing! " + err);
+        }
+    } else {
+        serverQueue.songs.push(song);
+        return message.channel.send(`${song.title} has been added to the queue!`);
+    }
+}
+
+function playSong(guild, song) {
+    const serverQueue = queue.get(guild.id);
+
+    if (!song) {
+        serverQueue.voiceChannel.leave();
+        queue.delete(guild.id);
+        return;
+    }
+
+    const dispatcher = serverQueue.connection.playStream(ytdl(song.url, { filter: 'audioonly' }))
+        .on('end', () => {
+            serverQueue.songs.shift();
+            playSong(guild, serverQueue.songs[0]);
+        })
+        .on('error', error => {
+            console.log(error);
+        })
+    dispatcher.setVolumeLogarithmic(serverQueue.volume / 5);
 }
