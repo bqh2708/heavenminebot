@@ -411,7 +411,7 @@ async function run(msg, youtubeUrl) {
     }
     else if (ytdl.validateURL(youtubeUrl)) {
         musicQueue.push(youtubeUrl);
-        let vc = msg.guild.channels.find(ch => ch.name.toLowerCase() === 'music' && ch.type === 'voice');
+        let vc = musicChannel;
         console.info(vc);
         if (vc && vc.connection) {
             if (!vc.connection.speaking) {
