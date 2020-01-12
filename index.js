@@ -453,7 +453,7 @@ async function run(msg, result) {
                 await playSong(vc.connection, msg);
             }
             else {
-                console.log(musicQueue);
+                msg.reply(`Đã thêm bài hát : ${title} vào danh sách phát !`).then(m => m.delete(5000));
             }
         }
     } else {
@@ -469,8 +469,8 @@ async function playSong(connection, msg) {
             .setColor("#98D989")
             .setTitle('Bài hát đang phát')
             .setDescription(`${musicQueue[0].title}
-            Người đề xuất : 「<@!${musicQueue[0].authorId}>」
-            `);
+            「<@!${musicQueue[0].authorId}>」`)
+            .setAuthor(msg.author.username, message.author.displayAvatarURL);
         msg.channel.send(embed);
     });
 
