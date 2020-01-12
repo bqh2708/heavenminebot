@@ -40,6 +40,7 @@ var commandBotChannel;
 
 var musicVoiceChannel;
 var musicTextChannel;
+var curentChannel;
 
 534043453042982933
 
@@ -339,6 +340,10 @@ client.on("message", async message => {
                 switch (args[0]) {
                     case 'play':
                         if (args[1]) {
+                            if (!curentChannel) {
+                                curentChannel = client.channels.filter(c => c.id === message.member.user.voiceChannelID).get(message.member.user.voiceChannelID);
+                                console.info(curentChannel);
+                            }
                             await musicVoiceChannel.join();
 
                             // Search trên youtube 
@@ -466,9 +471,10 @@ async function playSong(connection, msg) {
         embed = new RichEmbed()
             .setColor("#98D989")
             .setTitle('Bài hát đang phát')
-            .setDescription(musicQueue[0].title, musicQueue[0].url)
-
-        musicTextChannel.send(embed);
+            .setDescription(`${musicQueue[0].title}
+            Người đề xuất : 「<@!${musicQueue[0].authorId}}>」
+            `);
+        msg.channel.send(embed);
     });
 
     dispatcher.on('end', () => {
