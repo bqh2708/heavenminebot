@@ -476,9 +476,8 @@ async function playSong(connection, msg) {
             .setColor("#98D989")
             .setTitle('Bài hát đang phát ♪♪')
             .setDescription(`${musicQueue[0].title}
-            「<@!${musicQueue[0].authorId}>」
-            `)
-            .setAuthor(msg.author.username, message.author.displayAvatarURL);
+            「<@!${musicQueue[0].authorId}>」`)
+            ;
         msg.channel.send(embed);
     });
 
