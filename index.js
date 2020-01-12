@@ -401,7 +401,7 @@ function upExp(info, exp, uid) {
 }
 
 async function run(msg, youtubeUrl) {
-    let embed = new discord.RichEmbed();
+    let embed = new RichEmbed();
     if (musicQueue.some(url => url === youtubeUrl)) {
         embed.setDescription("Url is already in queue.");
     }
