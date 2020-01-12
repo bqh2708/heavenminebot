@@ -38,7 +38,10 @@ var queue = new Map();
 
 var commandBotChannel;
 
-var musicChannel;
+var musicVoiceChannel;
+var musicTextChannel;
+
+534043453042982933
 
 
 // When the bot's online, what's in these brackets will be executed
@@ -56,8 +59,8 @@ client.on("ready", () => {
     });
 
     commandBotChannel = client.channels.filter(c => c.id === '665733268477444165').get('665733268477444165');
-
-    musicChannel = client.channels.filter(c => c.id === '533527442132828163').get('533527442132828163');
+    musicVoiceChannel = client.channels.filter(c => c.id === '533527442132828163').get('533527442132828163');
+    musicTextChannel = client.channels.filter(c => c.id === '534043453042982933').get('534043453042982933');;
 
     ;
 
@@ -117,10 +120,12 @@ client.on("message", async message => {
     const args = message.content.slice(prefix.length).trim().split(/ +/g);
     const cmd = (args.shift()).toLowerCase();
 
+    let embed = new RichEmbed();
+
     switch (cmd) {
 
         case 'help':
-            const embed = new RichEmbed()
+            embed = new RichEmbed()
                 .setColor("#98D989")
                 .setDescription('Không có lệnh nào hêt :)')
                 .setAuthor('Danh sách các lệnh HM', client.user.displayAvatarURL);
@@ -140,7 +145,7 @@ client.on("message", async message => {
             // If the first argument is embed, send an embed,
             // otherwise, send a normal message
             if (args[0].toLowerCase() === "embed") {
-                const embed = new RichEmbed()
+                embed = new RichEmbed()
                     .setDescription(args.slice(1).join(" "))
                     .setColor("#98D989")
                     .setTitle('1234')
@@ -186,7 +191,7 @@ client.on("message", async message => {
                         break;
 
                     case 'help':
-                        const embed = new RichEmbed()
+                        embed = new RichEmbed()
                             .setColor("#98D989")
                             .setDescription('soon...')
                             .setAuthor('Danh sách các lệnh level', client.user.displayAvatarURL);
@@ -334,14 +339,13 @@ client.on("message", async message => {
                 switch (args[0]) {
                     case 'play':
                         if (args[1]) {
-                            await musicChannel.join();
+                            await musicVoiceChannel.join();
 
                             // Search trên youtube 
                             let results = await search(args.slice(1).join(" "), opts).catch(err => console.log(err));
                             if (results) {
                                 let youtubeResults = results.results;
-
-                                run(message, youtubeResults[0].link)
+                                run(message, youtubeResults)
                             }
                         }
                 }
@@ -430,15 +434,18 @@ function upExp(info, exp, uid) {
     }
 }
 
-async function run(msg, youtubeUrl) {
+async function run(msg, result) {
+
+    youtubeUrl = result[0].link;
+    let title = result[0].title;
 
     let embed = new RichEmbed();
-    if (musicQueue.some(url => url === youtubeUrl)) {
+    if (musicQueue.some(x => x.url === youtubeUrl)) {
         embed.setDescription("Url is already in queue.");
     }
     else if (ytdl.validateURL(youtubeUrl)) {
-        musicQueue.push(youtubeUrl);
-        let vc = musicChannel;
+        musicQueue.push({ title: title, url: youtubeUrl, authorId: msg.author.id });
+        let vc = musicVoiceChannel;
         if (vc && vc.connection) {
             if (!vc.connection.speaking) {
                 await playSong(vc.connection, msg);
@@ -453,16 +460,21 @@ async function run(msg, youtubeUrl) {
 }
 
 async function playSong(connection, msg) {
-    const stream = ytdl(musicQueue[0], { filter: 'audioonly' });
+    const stream = ytdl(musicQueue[0].url, { filter: 'audioonly' });
     const dispatcher = connection.playStream(stream, streamOptions);
     dispatcher.on('start', () => {
-        msg.channel.send("Playing song...");
+        embed = new RichEmbed()
+            .setColor("#98D989")
+            .setTitle('Bài hát đang phát')
+            .setDescription(musicQueue[0].title)
+            .setURL(musicQueue[0].url);
+        musicTextChannel.send(embed);
     });
 
     dispatcher.on('end', () => {
         musicQueue.shift();
         if (musicQueue.length === 0) {
-            console.log("No more songs to be played...");
+            await musicVoiceChannel.leave();
         }
         else {
             setTimeout(() => {
