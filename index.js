@@ -467,6 +467,7 @@ async function run(msg, result) {
 
 async function playSong(connection, msg) {
     const stream = ytdl(musicQueue[0].url, { filter: 'audioonly' });
+    console.info(stream);
     const dispatcher = connection.playStream(stream, streamOptions);
     dispatcher.on('start', () => {
         embed = new RichEmbed()
