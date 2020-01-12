@@ -444,16 +444,13 @@ async function run(msg, result) {
     youtubeUrl = result[0].link;
     let title = result[0].title;
 
-    console.info(youtubeUrl);
-    console.info(result[0]);
-
     let embed = new RichEmbed();
     if (musicQueue.some(x => x.url === youtubeUrl)) {
         embed.setDescription("Url is already in queue.");
     }
     else if (ytdl.validateURL(youtubeUrl)) {
         musicQueue.push({ title: title, url: youtubeUrl, authorId: msg.author.id });
-        let vc = musicVoiceChannel;
+        let vc = currentMusicChannel;
         if (vc && vc.connection) {
             if (!vc.connection.speaking) {
                 await playSong(vc.connection, msg);
