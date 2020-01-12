@@ -470,7 +470,7 @@ async function playSong(connection, msg) {
             .setTitle('Bài hát đang phát')
             .setDescription(`${musicQueue[0].title}
             「<@!${musicQueue[0].authorId}>」`)
-            .setAuthor(msg.author.username, message.author.displayAvatarURL);
+            .setAuthor(msg.author.username, msg.author.displayAvatarURL);
         msg.channel.send(embed);
     });
 
