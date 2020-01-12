@@ -339,7 +339,7 @@ client.on("message", async message => {
                     case 'play':
                         if (args[1]) {
                             if (!currentMusicChannel) {
-                                currentMusicChannel = client.channels.filter(c => c.id === message.voiceChannelID).get(message.voiceChannelID);
+                                currentMusicChannel = client.channels.filter(c => c.id === message.member.voiceChannelID).get(message.member.voiceChannelID);
                                 await currentMusicChannel.join();
                             }
 
