@@ -444,6 +444,9 @@ async function run(msg, result) {
     youtubeUrl = result[0].link;
     let title = result[0].title;
 
+    console.info(youtubeUrl);
+    console.info(result[0]);
+
     let embed = new RichEmbed();
     if (musicQueue.some(x => x.url === youtubeUrl)) {
         embed.setDescription("Url is already in queue.");
