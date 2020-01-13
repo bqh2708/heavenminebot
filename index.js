@@ -48,9 +48,7 @@ client.on("ready", () => {
 
     commandBotChannel = client.channels.filter(c => c.id === '665733268477444165').get('665733268477444165');
     musicVoiceChannel = client.channels.filter(c => c.id === '533527442132828163').get('533527442132828163');
-    musicTextChannel = client.channels.filter(c => c.id === '534043453042982933').get('534043453042982933');;
-
-    ;
+    musicTextChannel = client.channels.filter(c => c.id === '534043453042982933').get('534043453042982933');
 
     // client.guilds.get('533289582213726209').members.get('376557542177767445').send('Online!');
 
@@ -511,9 +509,9 @@ function replyHelpMessage(message) {
     var content = `
     \`hm! -music <key> \`
 
-    - \`play\` <Tên bài hát>                  Thêm bài vào danh sách phát
-    - \`next\`                                Chuyển bài hát tiếp theo ( Sẽ cập nhât tính năng vote ...)
-    - \`loop\`                                Bật/Tắt chế độ lặp lại danh sách phát
+    - \`play\` <Tên bài hát>\t\t\t\tThêm bài vào danh sách phát
+    - \`next\`\t\t\t\tChuyển bài hát tiếp theo ( Sẽ cập nhât tính năng vote ...)
+    - \`loop\`\t\t\t\tBật/Tắt chế độ lặp lại danh sách phát
 
     Có thể sử dụng command tắt VD : hm! -m -n = hm! music next
     `;
