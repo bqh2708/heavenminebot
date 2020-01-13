@@ -351,23 +351,15 @@ client.on("message", async message => {
                                 run(message, youtubeResults)
                             }
                         }
+                        break;
+                    case 'next': case '-n':
+                        if (curentChannel && curentChannel.connection) {
+                            curentChannel.connection.disconnect()
+                            playSong(curentChannel.connection, message)
+                        }
                 }
             } else {
 
-            }
-            break;
-
-        case 'search':
-            let embedSearch = new RichEmbed()
-                .setColor("#73ffdc")
-                .setDescription("Please enter a search query. Remember to narrow down your search.")
-                .setTitle("YouTube Search API");
-            let embedMsg = await message.channel.send(embedSearch);
-            let filter = m => m.author.id === message.author.id;
-            let query = await message.channel.awaitMessages(filter, { max: 1 });
-            let results = await search(query.first().content, opts).catch(err => console.log(err));
-            if (results) {
-                let youtubeResults = results.results;
             }
             break;
 
@@ -446,8 +438,8 @@ async function run(msg, result) {
         embed.setDescription("Url is already in queue.");
     }
     else if (ytdl.validateURL(youtubeUrl)) {
-        musicQueue.push({ title: title, url: youtubeUrl, authorId: msg.author.id });
-        let vc = musicVoiceChannel;
+        musicQueue.push({ title: title, url: youtubeUrl, authorId: msg.author.id, username: msg.author.username, avatarURL: msg.author.displayAvatarURL });
+        let vc = curentChannel;
         if (vc && vc.connection) {
             if (!vc.connection.speaking) {
                 await playSong(vc.connection, msg);
@@ -467,10 +459,9 @@ async function playSong(connection, msg) {
     dispatcher.on('start', () => {
         embed = new RichEmbed()
             .setColor("#98D989")
-            .setTitle('Bài hát đang phát')
+            .setAuthor(musicQueue[0].username, musicQueue[0].username.displayAvatarURL)
             .setDescription(`${musicQueue[0].title}
-            「<@!${musicQueue[0].authorId}>」`)
-            .setAuthor(msg.author.username, msg.author.displayAvatarURL);
+            「<@!${musicQueue[0].authorId}>」`);
         msg.channel.send(embed);
     });
 
