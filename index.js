@@ -340,6 +340,10 @@ client.on("message", async message => {
                     case 'play': case '-p':
                         if (args[1]) {
                             if (!curentChannel) {
+                                if (!message.member.voiceChannelID) {
+                                    message.reply('Hãy tham gia voice channel !').then(m => m.delete(10000));
+                                    break;
+                                }
                                 curentChannel = client.channels.filter(c => c.id === message.member.voiceChannelID).get(message.member.voiceChannelID);
                             }
                             await curentChannel.join();
@@ -355,7 +359,15 @@ client.on("message", async message => {
                     case 'next': case '-n':
                         if (curentChannel && curentChannel.connection) {
                             curentChannel.connection.disconnect()
-                            playSong(curentChannel.connection, message)
+                            musicQueue.shift();
+                            if (musicQueue.length === 0) {
+                                curentChannel.leave();
+                            }
+                            else {
+                                setTimeout(() => {
+                                    playSong(curentChannel.connection, message);
+                                }, 500)
+                            }
                         }
                 }
             } else {
