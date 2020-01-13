@@ -359,7 +359,6 @@ client.on("message", async message => {
                     case 'next': case '-n':
                         if (curentChannel && curentChannel.connection) {
                             curentChannel.connection.disconnect()
-                            musicQueue.shift();
                             if (musicQueue.length === 0) {
                                 curentChannel.leave();
                             }
