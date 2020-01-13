@@ -359,6 +359,10 @@ client.on("message", async message => {
                             message.reply('Đã bật chế dộ lặp bài hát !').then(m => m.delete(10000));
                         }
                         break;
+                    case 'help | -h':
+                    default:
+                        replyHelpMessage(message);
+                        break;
                 }
             } else {
 
@@ -478,7 +482,7 @@ async function playSong(connection, msg) {
     dispatcherStream.on('start', () => {
         embed = new RichEmbed()
             .setColor("#98D989")
-            .setAuthor(musicQueue[0].username, musicQueue[0].displayAvatarURL)
+            .setAuthor(musicQueue[0].username, musicQueue[0].avatarURL)
             .setDescription(`${musicQueue[0].title}
             「<@!${musicQueue[0].authorId}>」`);
         msg.channel.send(embed);
@@ -501,6 +505,19 @@ async function playSong(connection, msg) {
             }, 500)
         }
     })
+}
+
+function replyHelpMessage(message) {
+    var content = `
+    \`hm! -music <command> \` | \`hm -m <command \`
+    \`play\` | \`-p\` <Tên bài hát>             Yêu cầu phát bài
+    `;
+
+    embed = new RichEmbed()
+        .setColor("#98D989")
+        .setAuthor(message.author.username, message.author.displayAvatarURL)
+        .setDescription(content);
+    message.channel.send(embed);
 }
 
 /**********************************************************  MUSIC END **********************************************************/
