@@ -364,6 +364,7 @@ client.on("message", async message => {
                                 curentChannel.leave();
                             }
                             else {
+                                console.info(musicQueue);
                                 setTimeout(() => {
                                     playSong(curentChannel.connection, message);
                                 }, 500)
@@ -458,6 +459,7 @@ async function run(msg, result) {
             }
             else {
                 msg.reply(`Đã thêm bài hát : ${title} vào danh sách phát !`).then(m => m.delete(5000));
+                console.info(musicQueue);
             }
         }
     } else {
@@ -466,6 +468,7 @@ async function run(msg, result) {
 }
 
 async function playSong(connection, msg) {
+    console.info(musicQueue);
     const stream = ytdl(musicQueue[0].url, { filter: 'audioonly' });
     const dispatcher = connection.playStream(stream, streamOptions);
     dispatcher.on('start', () => {
