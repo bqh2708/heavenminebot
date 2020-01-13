@@ -5,25 +5,11 @@ var fs = require('fs');
 let level = require("./level.json");
 const Canvas = require('canvas');
 const commando = require('discord.js-commando');
-const search = require('youtube-search');
 
-const opts = {
-    maxResults: 1,
-    key: process.env.YOUTUBE_API,
-    type: 'video'
-};
-
-const streamOptions = {
-    seek: 0,
-    volume: 1
-}
-var musicQueue = [];
 
 config({
     path: __dirname + "/.env"
 })
-
-var dispatcherStream;
 
 // Declares our bot,
 // the disableEveryone prevents the client to ping @everyone
@@ -363,6 +349,16 @@ client.on("message", async message => {
                             dispatcherStream.end();
                         }
                         break;
+
+                    case 'loop': case '-l':
+                        if (loopMusicFlg) {
+                            loopMusicFlg = false;
+                            message.reply('Đã tắt chế dộ lặp bài hát !').then(m => m.delete(10000));
+                        } else {
+                            loopMusicFlg = true;
+                            message.reply('Đã bật chế dộ lặp bài hát !').then(m => m.delete(10000));
+                        }
+                        break;
                 }
             } else {
 
@@ -434,16 +430,32 @@ function upExp(info, exp, uid) {
     }
 }
 
-async function run(msg, result) {
 
+
+/**********************************************************  MUSIC **********************************************************/
+
+const search = require('youtube-search');
+const opts = {
+    maxResults: 1,
+    key: process.env.YOUTUBE_API,
+    type: 'video'
+};
+const streamOptions = {
+    seek: 0,
+    volume: 1
+}
+var musicQueue = [];
+var dispatcherStream;
+
+var loopMusicFlg = false;
+
+async function run(msg, result) {
     youtubeUrl = result[0].link;
     let title = result[0].title;
 
-    let embed = new RichEmbed();
     if (musicQueue.some(x => x.url === youtubeUrl)) {
-        embed.setDescription("Url is already in queue.");
-    }
-    else if (ytdl.validateURL(youtubeUrl)) {
+        msg.reply(`Đã tồn tại bài hát vừa yêu cầu trong danh sách phát !`).then(m => m.delete(5000));
+    } else if (ytdl.validateURL(youtubeUrl)) {
         musicQueue.push({ title: title, url: youtubeUrl, authorId: msg.author.id, username: msg.author.username, avatarURL: msg.author.displayAvatarURL });
         let vc = curentChannel;
         if (vc && vc.connection) {
@@ -452,36 +464,43 @@ async function run(msg, result) {
             }
             else {
                 msg.reply(`Đã thêm bài hát : ${title} vào danh sách phát !`).then(m => m.delete(5000));
-                console.info(musicQueue);
             }
         }
     } else {
-        embed.setDescription("Invalid YouTube URL!");
+        msg.reply(`Có lỗi xảy ra khi tìm kiếm bài hát !`).then(m => m.delete(5000));
     }
 }
 
 async function playSong(connection, msg) {
-    console.info(musicQueue);
     const stream = ytdl(musicQueue[0].url, { filter: 'audioonly' });
     dispatcherStream = connection.playStream(stream, streamOptions);
+
     dispatcherStream.on('start', () => {
         embed = new RichEmbed()
             .setColor("#98D989")
-            .setAuthor(musicQueue[0].username, musicQueue[0].username.displayAvatarURL)
+            .setAuthor(musicQueue[0].username, musicQueue[0].displayAvatarURL)
             .setDescription(`${musicQueue[0].title}
             「<@!${musicQueue[0].authorId}>」`);
         msg.channel.send(embed);
     });
 
     dispatcherStream.on('end', () => {
-        musicQueue.shift();
+        var musicTemp = musicQueue.shift();
+
+        if (loopMusicFlg) {
+            musicQueue.push(musicTemp);
+        } else {
+
+        }
+
         if (musicQueue.length === 0) {
             curentChannel.leave();
-        }
-        else {
+        } else {
             setTimeout(() => {
                 playSong(connection, msg);
             }, 500)
         }
     })
 }
+
+/**********************************************************  MUSIC END **********************************************************/
