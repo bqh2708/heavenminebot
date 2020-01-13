@@ -23,6 +23,8 @@ config({
     path: __dirname + "/.env"
 })
 
+var dispatcherStream;
+
 // Declares our bot,
 // the disableEveryone prevents the client to ping @everyone
 const client = new Client({
@@ -357,18 +359,10 @@ client.on("message", async message => {
                         }
                         break;
                     case 'next': case '-n':
-                        if (curentChannel && curentChannel.connection) {
-                            curentChannel.connection.disconnect()
-                            if (musicQueue.length === 0) {
-                                curentChannel.leave();
-                            }
-                            else {
-                                console.info(musicQueue);
-                                setTimeout(() => {
-                                    playSong(curentChannel.connection, message);
-                                }, 500)
-                            }
+                        if (dispatcherStream) {
+                            dispatcherStream.end();
                         }
+                        break;
                 }
             } else {
 
@@ -469,8 +463,8 @@ async function run(msg, result) {
 async function playSong(connection, msg) {
     console.info(musicQueue);
     const stream = ytdl(musicQueue[0].url, { filter: 'audioonly' });
-    const dispatcher = connection.playStream(stream, streamOptions);
-    dispatcher.on('start', () => {
+    dispatcherStream = connection.playStream(stream, streamOptions);
+    dispatcherStream.on('start', () => {
         embed = new RichEmbed()
             .setColor("#98D989")
             .setAuthor(musicQueue[0].username, musicQueue[0].username.displayAvatarURL)
@@ -479,7 +473,7 @@ async function playSong(connection, msg) {
         msg.channel.send(embed);
     });
 
-    dispatcher.on('end', () => {
+    dispatcherStream.on('end', () => {
         musicQueue.shift();
         if (musicQueue.length === 0) {
             curentChannel.leave();
