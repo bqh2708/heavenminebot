@@ -509,8 +509,13 @@ async function playSong(connection, msg) {
 
 function replyHelpMessage(message) {
     var content = `
-    \`hm! -music <command> \` | \`hm -m <command \`
-    \`play\` | \`-p\` <Tên bài hát>             Yêu cầu phát bài
+    \`hm! -music <key> \`
+
+    - \`play\` <Tên bài hát>                  Thêm bài vào danh sách phát
+    - \`next\`                                Chuyển bài hát tiếp theo ( Sẽ cập nhât tính năng vote ...)
+    - \`loop\`                                Bật/Tắt chế độ lặp lại danh sách phát
+
+    Có thể sử dụng command tắt VD : hm! -m -n = hm! music next
     `;
 
     embed = new RichEmbed()
