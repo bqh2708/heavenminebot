@@ -497,6 +497,7 @@ async function playSong(connection, msg) {
 
         if (musicQueue.length === 0) {
             curentChannel.leave();
+            curentChannel = null;
         } else {
             setTimeout(() => {
                 playSong(connection, msg);
@@ -507,7 +508,7 @@ async function playSong(connection, msg) {
 
 function replyHelpMessage(message) {
     var content = `
-    \`hm! -music <key> \`
+    \`hm! music <key> \`
 
     - \`play\` <Tên bài hát>\t\t\t\tThêm bài vào danh sách phát
     - \`next\`\t\t\t\tChuyển bài hát tiếp theo ( Sẽ cập nhât tính năng vote ...)
