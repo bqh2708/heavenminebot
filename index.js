@@ -95,7 +95,7 @@ client.on("message", async message => {
     // If the message doesn't start with the prefix, return
     if (message.author.bot) return;
     if (!message.guild) return;
-    if (!message.content.startsWith(prefix)) return;
+    if (!message.content.toLowerCase().startsWith(prefix)) return;
 
     // Arguments and command variable
     // cmd is the first word in the message, aka the command
@@ -465,7 +465,7 @@ async function run(msg, result) {
                 await playSong(vc.connection, msg);
             }
             else {
-                msg.reply(`Đã thêm bài hát : ${title} vào danh sách phát !`).then(m => m.delete(5000));
+                msg.reply(`Đã thêm bài hát : ${title} vào danh sách phát !`);
             }
         }
     } else {
