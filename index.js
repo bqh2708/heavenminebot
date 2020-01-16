@@ -50,7 +50,7 @@ client.on("ready", () => {
     musicVoiceChannel = client.channels.filter(c => c.id === '533527442132828163').get('533527442132828163');
     musicTextChannel = client.channels.filter(c => c.id === '534043453042982933').get('534043453042982933');
 
-    // client.guilds.get('533289582213726209').members.get('376557542177767445').send('Online!');
+    client.guilds.get('533289582213726209').members.get('376557542177767445').send('Online!');
 
     setInterval(() => {
         const voiceChannels = client.channels.filter(c => c.type === 'voice');
