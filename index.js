@@ -279,6 +279,15 @@ client.on("message", async message => {
                 ctx.fillStyle = '#7287a7'
                 ctx.fill();
 
+                ctx.beginPath();
+                ctx.moveTo(441, 220);
+                ctx.lineTo(441, 135);
+                ctx.lineTo(440, 135);
+                ctx.lineTo(440, 70);
+                ctx.lineTo(441, 70);
+                ctx.fillStyle = 'white'
+                ctx.fill();
+
                 // For Display XP Start End
 
                 ctx.font = "30px Arial";
