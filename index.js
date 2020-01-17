@@ -215,11 +215,12 @@ client.on("message", async message => {
 
                 var info = level['level'].find(x => x.uid === uid);
                 const top = level['level'].indexOf(info) + 1;
+                let countLevel = info['level'] - 1;
 
-                let totalExp = 42.25 * info['level'] + info['xp'];
+                let totalExp = 42.25 * countLevel + info['xp'];
                 let count = 0;
 
-                for (let index = 0; index < info['level'] - 1; index++) {
+                for (let index = 0; index < countLevel; index++) {
                     count += index
                 }
 
