@@ -323,7 +323,7 @@ client.on("message", async message => {
                 ctx.font = "17px Consolas";
                 ctx.fillStyle = "#fffffff9";
                 ctx.textAlign = 'left'
-                ctx.fillText(`#${top}`, 560, 90);
+                ctx.fillText(`#${top}`, 580, 90);
 
                 ctx.font = "17px Arial";
                 ctx.fillStyle = "#fffffff9";
@@ -333,7 +333,7 @@ client.on("message", async message => {
                 ctx.font = "17px Consolas";
                 ctx.fillStyle = "#fffffff9";
                 ctx.textAlign = 'left'
-                ctx.fillText(totalExp.toFixed(0), 560, 125);
+                ctx.fillText(totalExp.toFixed(0), 580, 125);
 
                 const attachment = new Attachment(canvas.toBuffer(), `level.png`);
                 message.channel.send(attachment);
