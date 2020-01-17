@@ -216,14 +216,14 @@ client.on("message", async message => {
                 var info = level['level'].find(x => x.uid === uid);
                 const top = level['level'].indexOf(info) + 1;
 
-                let totalExp = 42.25 * info['level'];
+                let totalExp = 42.25 * info['level'] + info['xp'];
                 let count = 0;
 
                 for (let index = 0; index < info['level'] - 1; index++) {
                     count += index
                 }
 
-                totalExp += 40 * count + info['xp'];
+                totalExp += 40 * count;
 
                 const currentXp = info['xp'];
                 const nextXp = 42.25 + 40 * info['level'];
@@ -315,25 +315,25 @@ client.on("message", async message => {
                 ctx.textAlign = 'center'
                 ctx.fillText(info['level'], 385, 125);
 
-                ctx.font = "15px Arial";
+                ctx.font = "17px Arial";
                 ctx.fillStyle = "#fffffff9";
                 ctx.textAlign = 'left'
-                ctx.fillText("Server rank : ", 550, 90);
+                ctx.fillText("Server rank : ", 460, 90);
 
-                ctx.font = "16px Consolas";
+                ctx.font = "17px Consolas";
                 ctx.fillStyle = "#fffffff9";
                 ctx.textAlign = 'left'
-                ctx.fillText(`#${top}`, 550, 90);
+                ctx.fillText(`#${top}`, 560, 90);
 
-                ctx.font = "15px Arial";
+                ctx.font = "17px Arial";
                 ctx.fillStyle = "#fffffff9";
                 ctx.textAlign = 'left'
                 ctx.fillText("Server exp : ", 460, 125);
 
-                ctx.font = "16px Consolas";
+                ctx.font = "17px Consolas";
                 ctx.fillStyle = "#fffffff9";
                 ctx.textAlign = 'left'
-                ctx.fillText(totalExp.toFixed(0), 550, 125);
+                ctx.fillText(totalExp.toFixed(0), 560, 125);
 
                 const attachment = new Attachment(canvas.toBuffer(), `level.png`);
                 message.channel.send(attachment);
