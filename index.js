@@ -24,13 +24,7 @@ const ytdl = require("ytdl-core");
 
 var queue = new Map();
 
-var commandBotChannel;
-
-var musicVoiceChannel;
-var musicTextChannel;
 var curentChannel;
-
-534043453042982933
 
 
 // When the bot's online, what's in these brackets will be executed
@@ -213,12 +207,23 @@ client.on("message", async message => {
                         break;
                 }
             } else {
+                level['level'].sort(GetSortOrder('level'));
                 const canvas = Canvas.createCanvas(725, 275);
                 const ctx = canvas.getContext('2d');
                 const avatar = message.member.user.displayAvatarURL !== 'https://discordapp.com/assets/6debd47ed13483642cf09e832ed0bc1b.png' ? await Canvas.loadImage(message.member.user.displayAvatarURL)
                     : await Canvas.loadImage('./avatarDefault.jpg');
 
                 var info = level['level'].find(x => x.uid === uid);
+                const top = level['level'].indexOf(info) + 1;
+
+                let totalExp = 42.25 * info['level'];
+                let count = 0;
+
+                for (let index = 0; index < info['level']; index++) {
+                    count += index
+                }
+
+                totalExp += 40 * count;
 
                 const currentXp = info['xp'];
                 const nextXp = 42.25 + 40 * info['level'];
@@ -300,6 +305,25 @@ client.on("message", async message => {
                 ctx.fillStyle = "#fffffff9";
                 ctx.textAlign = 'center'
                 ctx.fillText(info['level'], 385, 125);
+
+                ctx.font = "15px Arial";
+                ctx.fillStyle = "#fffffff9";
+                ctx.fillText("Server rank : ", 540, 90);
+
+                ctx.font = "16px Consolas";
+                ctx.fillStyle = "#fffffff9";
+                ctx.textAlign = 'left'
+                ctx.fillText(`#${top}`, 540, 90);
+
+                ctx.font = "15px Arial";
+                ctx.fillStyle = "#fffffff9";
+                ctx.textAlign = 'left'
+                ctx.fillText("Server exp : ", 450, 125);
+
+                ctx.font = "16px Consolas";
+                ctx.fillStyle = "#fffffff9";
+                ctx.textAlign = 'left'
+                ctx.fillText(totalExp.toFixed(0), 540, 125);
 
                 const attachment = new Attachment(canvas.toBuffer(), `level.png`);
                 message.channel.send(attachment);
