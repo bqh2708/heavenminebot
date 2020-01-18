@@ -441,13 +441,9 @@ client.on("message", async message => {
 
                                                 });
                                             }
-
+                                            clearInterval(interval);
 
                                             votingFlg = false;
-                                        }
-
-                                        if (countDown === 2) {
-                                            clearInterval(interval);
                                         }
                                     }, 1000);
                                 });
