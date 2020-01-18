@@ -550,8 +550,8 @@ async function musicExe(args, message) {
                 embed = new RichEmbed()
                     .setDescription(countDown);
                 message.channel.send(embed).then((msg) => {
-                    msg.react('667753397490941982');
                     msg.react('667753909418459178');
+                    msg.react('667753397490941982');
 
                     interval = setInterval(() => {
                         countDown--;
