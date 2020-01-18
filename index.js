@@ -426,7 +426,7 @@ client.on("message", async message => {
                                                     .setAuthor('Yêu cầu chuyển bài hát !', client.user.displayAvatarURL)
                                                     .setDescription(`<@!${msg.author.id}> vừa yêu cầu chuyển bài hát. 
                                         Kết quả :Không chuyển bài
-                                        :iconYes: : Đồng ý    :iconNo: Không đồng ý`);
+                                        \:iconYes: : Đồng ý    \:iconNo: Không đồng ý`);
                                             }
 
                                             msg.edit(embed).then(m => m.delete(2000));
