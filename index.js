@@ -417,9 +417,11 @@ client.on("message", async message => {
                                                     .setDescription(`<@!${msg.author.id}> vừa yêu cầu chuyển bài hát. 
                                         Kết quả : Chuyển bài
                                         <:iconYes:667753397490941982> : Đồng ý    <:iconNo:667753909418459178> Không đồng ý`);
-                                                if (dispatcherStream) {
-                                                    dispatcherStream.end();
-                                                }
+                                                setTimeout(() => {
+                                                    if (dispatcherStream) {
+                                                        dispatcherStream.end();
+                                                    }
+                                                }, 2000);
                                             } else {
                                                 embed = new RichEmbed()
                                                     .setColor("#CC99FF")
