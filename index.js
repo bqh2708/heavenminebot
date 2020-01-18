@@ -378,9 +378,6 @@ client.on("message", async message => {
                         }
                         break;
                     case 'next': case '-n':
-                        // Check if you can delete the message
-                        if (message.deletable) message.delete();
-
                         if (curentChannel) {
                             if (!votingFlg) {
                                 let countDown = 30;
