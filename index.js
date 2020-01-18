@@ -391,7 +391,7 @@ client.on("message", async message => {
                                     .setAuthor('Yêu cầu chuyển bài hát !', client.user.displayAvatarURL)
                                     .setDescription(`<@!${message.author.id}> vừa yêu cầu chuyển bài hát. 
                             Thời gian còn lại : ${countDown}
-                            <:iconYes:667753397490941982> : Đồng ý    <:iconNo:667753909418459178> Không đồng ý`);
+                            :iconYes: : Đồng ý    :iconNo: Không đồng ý`);
                                 message.channel.send(embed).then((msg) => {
                                     msg.react('667753397490941982');
                                     msg.react('667753909418459178');
@@ -402,7 +402,7 @@ client.on("message", async message => {
                                         embed = new RichEmbed()
                                             .setColor("#CC99FF")
                                             .setAuthor('Yêu cầu chuyển bài hát !', client.user.displayAvatarURL)
-                                            .setDescription(`<@!${message.author.id}> vừa yêu cầu chuyển bài hát. 
+                                            .setDescription(`<@!${msg.author.id}> vừa yêu cầu chuyển bài hát. 
                                 Thời gian còn lại : ${countDown}
                                 <:iconYes:667753397490941982> : Đồng ý    <:iconNo:667753909418459178> Không đồng ý`);
                                         msg.edit(embed);
@@ -414,33 +414,22 @@ client.on("message", async message => {
                                                 embed = new RichEmbed()
                                                     .setColor("#CC99FF")
                                                     .setAuthor('Yêu cầu chuyển bài hát !', client.user.displayAvatarURL)
-                                                    .setDescription(`<@!${message.author.id}> vừa yêu cầu chuyển bài hát. 
+                                                    .setDescription(`<@!${msg.author.id}> vừa yêu cầu chuyển bài hát. 
                                         Kết quả : Chuyển bài
                                         <:iconYes:667753397490941982> : Đồng ý    <:iconNo:667753909418459178> Không đồng ý`);
-                                                msg.edit(embed).then((m) => {
-                                                    setTimeout(() => {
-                                                        m.delete;
-                                                        if (dispatcherStream) {
-                                                            dispatcherStream.end();
-                                                        }
-                                                    }, 2000);
-
-                                                });
+                                                if (dispatcherStream) {
+                                                    dispatcherStream.end();
+                                                }
                                             } else {
                                                 embed = new RichEmbed()
                                                     .setColor("#CC99FF")
                                                     .setAuthor('Yêu cầu chuyển bài hát !', client.user.displayAvatarURL)
-                                                    .setDescription(`<@!${message.author.id}> vừa yêu cầu chuyển bài hát. 
+                                                    .setDescription(`<@!${msg.author.id}> vừa yêu cầu chuyển bài hát. 
                                         Kết quả :Không chuyển bài
                                         <:iconYes:667753397490941982> : Đồng ý    <:iconNo:667753909418459178> Không đồng ý`);
-
-                                                msg.edit(embed).then((m) => {
-                                                    setTimeout(() => {
-                                                        m.delete;
-                                                    }, 2000);
-
-                                                });
                                             }
+
+                                            msg.edit(embed).then(m => m.delete(2000));
                                             clearInterval(interval);
 
                                             votingFlg = false;
