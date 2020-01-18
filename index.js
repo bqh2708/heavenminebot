@@ -391,7 +391,7 @@ client.on("message", async message => {
                                     .setAuthor('Yêu cầu chuyển bài hát !', client.user.displayAvatarURL)
                                     .setDescription(`<@!${message.author.id}> vừa yêu cầu chuyển bài hát. 
                             Thời gian còn lại : ${countDown}
-                            :iconYes: : Đồng ý    :iconNo: Không đồng ý`);
+                            <:iconYes:667753397490941982> : Đồng ý    <:iconNo:667753909418459178> Không đồng ý`);
                                 message.channel.send(embed).then((msg) => {
                                     msg.react('667753397490941982');
                                     msg.react('667753909418459178');
@@ -404,7 +404,7 @@ client.on("message", async message => {
                                             .setAuthor('Yêu cầu chuyển bài hát !', client.user.displayAvatarURL)
                                             .setDescription(`<@!${msg.author.id}> vừa yêu cầu chuyển bài hát. 
                                 Thời gian còn lại : ${countDown}
-                                :iconYes: : Đồng ý    :iconNo: Không đồng ý`);
+                                <:iconYes:667753397490941982> : Đồng ý    <:iconNo:667753909418459178> Không đồng ý`);
                                         msg.edit(embed);
                                         if (countDown === 1) {
                                             let countYes = msg.reactions.get('iconYes:667753397490941982').count;
@@ -416,7 +416,7 @@ client.on("message", async message => {
                                                     .setAuthor('Yêu cầu chuyển bài hát !', client.user.displayAvatarURL)
                                                     .setDescription(`<@!${msg.author.id}> vừa yêu cầu chuyển bài hát. 
                                         Kết quả : Chuyển bài
-                                        :iconYes: : Đồng ý    :iconNo: Không đồng ý`);
+                                        <:iconYes:667753397490941982> : Đồng ý    <:iconNo:667753909418459178> Không đồng ý`);
                                                 if (dispatcherStream) {
                                                     dispatcherStream.end();
                                                 }
@@ -426,7 +426,7 @@ client.on("message", async message => {
                                                     .setAuthor('Yêu cầu chuyển bài hát !', client.user.displayAvatarURL)
                                                     .setDescription(`<@!${msg.author.id}> vừa yêu cầu chuyển bài hát. 
                                         Kết quả :Không chuyển bài
-                                        \:iconYes: : Đồng ý    \:iconNo: Không đồng ý`);
+                                        <:iconYes:667753397490941982> : Đồng ý    <:iconNo:667753909418459178> Không đồng ý`);
                                             }
 
                                             msg.edit(embed).then(m => m.delete(2000));
