@@ -152,6 +152,7 @@ client.on("message", async message => {
         /** Music Bot - NewHeaven */
         case 'music':
         case '-m':
+            console.info(args);
             musicExe(args, message)
             break;
 
@@ -520,7 +521,7 @@ function levelExecute(args, message) {
 /**********************************************************  MUSIC EXE **********************************************************/
 
 
-function musicExe(args, message) {
+async function musicExe(args, message) {
     if (args[0]) {
         switch (args[0]) {
             case 'play': case '-p':
@@ -532,10 +533,10 @@ function musicExe(args, message) {
                         }
                         curentChannel = client.channels.filter(c => c.id === message.member.voiceChannelID).get(message.member.voiceChannelID);
                     }
-                    curentChannel.join();
+                    await curentChannel.join();
 
                     // Search trên youtube 
-                    let results = search(args.slice(1).join(" "), opts).catch(err => console.log(err));
+                    let results = await search(args.slice(1).join(" "), opts).catch(err => console.log(err));
                     if (results) {
                         let youtubeResults = results.results;
                         run(message, youtubeResults)
