@@ -402,7 +402,7 @@ client.on("message", async message => {
                                         embed = new RichEmbed()
                                             .setColor("#CC99FF")
                                             .setAuthor('Yêu cầu chuyển bài hát !', client.user.displayAvatarURL)
-                                            .setDescription(`<@!${msg.author.id}> vừa yêu cầu chuyển bài hát. 
+                                            .setDescription(`<@!${message.author.id}> vừa yêu cầu chuyển bài hát. 
                                 Thời gian còn lại : ${countDown}
                                 <:iconYes:667753397490941982> : Đồng ý    <:iconNo:667753909418459178> Không đồng ý`);
                                         msg.edit(embed);
@@ -414,24 +414,33 @@ client.on("message", async message => {
                                                 embed = new RichEmbed()
                                                     .setColor("#CC99FF")
                                                     .setAuthor('Yêu cầu chuyển bài hát !', client.user.displayAvatarURL)
-                                                    .setDescription(`<@!${msg.author.id}> vừa yêu cầu chuyển bài hát. 
+                                                    .setDescription(`<@!${message.author.id}> vừa yêu cầu chuyển bài hát. 
                                         Kết quả : Chuyển bài
                                         <:iconYes:667753397490941982> : Đồng ý    <:iconNo:667753909418459178> Không đồng ý`);
-                                                setTimeout(() => {
-                                                    if (dispatcherStream) {
-                                                        dispatcherStream.end();
-                                                    }
-                                                }, 2000);
+                                                msg.edit(embed).then((m) => {
+                                                    setTimeout(() => {
+                                                        m.delete;
+                                                        if (dispatcherStream) {
+                                                            dispatcherStream.end();
+                                                        }
+                                                    }, 2000);
+
+                                                });
                                             } else {
                                                 embed = new RichEmbed()
                                                     .setColor("#CC99FF")
                                                     .setAuthor('Yêu cầu chuyển bài hát !', client.user.displayAvatarURL)
-                                                    .setDescription(`<@!${msg.author.id}> vừa yêu cầu chuyển bài hát. 
+                                                    .setDescription(`<@!${message.author.id}> vừa yêu cầu chuyển bài hát. 
                                         Kết quả :Không chuyển bài
                                         <:iconYes:667753397490941982> : Đồng ý    <:iconNo:667753909418459178> Không đồng ý`);
-                                            }
 
-                                            msg.edit(embed).then(m => m.delete(2000));
+                                                msg.edit(embed).then((m) => {
+                                                    setTimeout(() => {
+                                                        m.delete;
+                                                    }, 2000);
+
+                                                });
+                                            }
                                             clearInterval(interval);
 
                                             votingFlg = false;
