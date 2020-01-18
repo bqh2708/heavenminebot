@@ -152,7 +152,6 @@ client.on("message", async message => {
         /** Music Bot - NewHeaven */
         case 'music':
         case '-m':
-            console.info(args);
             musicExe(args, message)
             break;
 
@@ -519,6 +518,7 @@ function levelExecute(args, message) {
 
 
 /**********************************************************  MUSIC EXE **********************************************************/
+let votingFlg = false;
 
 
 async function musicExe(args, message) {
@@ -544,40 +544,73 @@ async function musicExe(args, message) {
                 }
                 break;
             case 'next': case '-n':
-                let countDown = 5;
-                let interval;
+                // Check if you can delete the message
+                if (message.deletable) message.delete();
 
-                embed = new RichEmbed()
-                    .setDescription(countDown);
-                message.channel.send(embed).then((msg) => {
-                    msg.react('667753397490941982');
-                    msg.react('667753909418459178');
+                if (curentChannel) {
+                    if (votingFlg) {
+                        let countDown = 30;
+                        let interval;
 
-                    interval = setInterval(() => {
-                        countDown--;
                         embed = new RichEmbed()
-                            .setDescription(countDown);
-                        msg.edit(embed);
-                        if (countDown === 1) {
-                            let countYes = msg.reactions.get('iconYes:667753397490941982').count;
-                            let countNo = msg.reactions.get('iconNo:667753909418459178').count;
+                            .setColor("#CC99FF")
+                            .setAuthor('Yêu cầu chuyển bài hát !', client.user.displayAvatarURL)
+                            .setDescription(`<@!${msg.author.id}> vừa yêu cầu chuyển bài hát. 
+                            Thời gian còn lại : ${countDown}
+                            :iconYes: : Đồng ý    :iconNo: Không đồng ý`);
+                        message.channel.send(embed).then((msg) => {
+                            msg.react('667753397490941982');
+                            msg.react('667753909418459178');
+                            votingFlg = true;
 
-                            if (countYes > countNo) {
-                                // if (dispatcherStream) {
-                                //     dispatcherStream.end();
-                                // }
+                            interval = setInterval(() => {
+                                countDown--;
                                 embed = new RichEmbed()
-                                    .setDescription('Next');
-                            } else {
-                                embed = new RichEmbed()
-                                    .setDescription('No next');
-                            }
+                                    .setColor("#CC99FF")
+                                    .setAuthor('Yêu cầu chuyển bài hát !', client.user.displayAvatarURL)
+                                    .setDescription(`<@!${msg.author.id}> vừa yêu cầu chuyển bài hát. 
+                                Thời gian còn lại : ${countDown}
+                                :iconYes: : Đồng ý    :iconNo: Không đồng ý`);
+                                msg.edit(embed);
+                                if (countDown === 1) {
+                                    let countYes = msg.reactions.get('iconYes:667753397490941982').count;
+                                    let countNo = msg.reactions.get('iconNo:667753909418459178').count;
 
-                            msg.edit(embed).then(m => m.delete(2000));
-                            clearInterval(interval);
-                        }
-                    }, 1000);
-                });
+                                    if (countYes > countNo) {
+                                        embed = new RichEmbed()
+                                            .setColor("#CC99FF")
+                                            .setAuthor('Yêu cầu chuyển bài hát !', client.user.displayAvatarURL)
+                                            .setDescription(`<@!${msg.author.id}> vừa yêu cầu chuyển bài hát. 
+                                        Kết quả : Chuyển bài
+                                        :iconYes: : Đồng ý    :iconNo: Không đồng ý`);
+
+                                        if (dispatcherStream) {
+                                            dispatcherStream.end();
+                                        }
+                                    } else {
+                                        embed = new RichEmbed()
+                                            .setColor("#CC99FF")
+                                            .setAuthor('Yêu cầu chuyển bài hát !', client.user.displayAvatarURL)
+                                            .setDescription(`<@!${msg.author.id}> vừa yêu cầu chuyển bài hát. 
+                                        Kết quả :Không chuyển bài
+                                        :iconYes: : Đồng ý    :iconNo: Không đồng ý`);
+                                    }
+
+                                    msg.edit(embed).then(m => m.delete(2000));
+                                    clearInterval(interval);
+
+                                    votingFlg = false;
+                                }
+                            }, 1000);
+                        });
+                    } else {
+                        message.reply('Đang vote rồi kìa má ==! ').then(m => m.delete(5000));
+                    }
+
+                } else {
+                    message.reply('Đùa tôi à ! Có phát nhạc đâu mà next :| ').then(m => m.delete(5000));
+                }
+
                 break;
 
             case 'loop': case '-l':
