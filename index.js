@@ -378,6 +378,9 @@ client.on("message", async message => {
                         }
                         break;
                     case 'next': case '-n':
+                        // Check if you can delete the message
+                        if (message.deletable) message.delete();
+
                         if (curentChannel) {
                             if (!votingFlg) {
                                 let countDown = 30;
@@ -386,7 +389,7 @@ client.on("message", async message => {
                                 embed = new RichEmbed()
                                     .setColor("#CC99FF")
                                     .setAuthor('Yêu cầu chuyển bài hát !', client.user.displayAvatarURL)
-                                    .setDescription(`<@!${msg.author.id}> vừa yêu cầu chuyển bài hát. 
+                                    .setDescription(`<@!${message.author.id}> vừa yêu cầu chuyển bài hát. 
                             Thời gian còn lại : ${countDown}
                             :iconYes: : Đồng ý    :iconNo: Không đồng ý`);
                                 message.channel.send(embed).then((msg) => {
