@@ -180,7 +180,7 @@ client.on("message", async message => {
                         break;
 
                     case 'top':
-                        level['level'].sort(GetSortOrder('level'));
+                        level['level'].sort(GetSortOrder('level', 'xp'));
 
                         const top1 = level['level'][0] ? `<@!${level['level'][0].uid}> - Level: ${level['level'][0].level}` : '';
                         const top2 = level['level'][1] ? `<@!${level['level'][1].uid}> - Level: ${level['level'][1].level}` : '';
@@ -207,7 +207,7 @@ client.on("message", async message => {
                         break;
                 }
             } else {
-                level['level'].sort(GetSortOrder('level'));
+                level['level'].sort(GetSortOrder('level', 'xp'));
                 const canvas = Canvas.createCanvas(725, 275);
                 const ctx = canvas.getContext('2d');
                 const avatar = message.member.user.displayAvatarURL !== 'https://discordapp.com/assets/6debd47ed13483642cf09e832ed0bc1b.png' ? await Canvas.loadImage(message.member.user.displayAvatarURL)
@@ -493,12 +493,18 @@ client.on('guildMemberUpdate', (oldData, newData) => {
 // Login the bot
 client.login(process.env.TOKEN);
 
-function GetSortOrder(prop) {
+function GetSortOrder(prop, prop2) {
     return function (a, b) {
         if (a[prop] < b[prop]) {
             return 1;
         } else if (a[prop] > b[prop]) {
             return -1;
+        } else if (a[prop] === b[prop]) {
+            if (a[prop2] < b[prop2]) {
+                return 1;
+            } else if (a[prop2] > b[prop2]) {
+                return -1;
+            }
         }
         return 0;
     }
