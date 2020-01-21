@@ -373,7 +373,7 @@ client.on("message", async message => {
                             let results = await search(args.slice(1).join(" "), opts).catch(err => console.log(err));
                             if (results) {
                                 let youtubeResults = results.results;
-                                run(message, youtubeResults)
+                                await run(message, youtubeResults)
                             }
                         }
                         break;
