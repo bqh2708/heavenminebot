@@ -530,7 +530,7 @@ function upExp(info, exp, uid) {
         info['xp'] += exp;
         if (info['xp'] > 42.25 + 40 * info['level']) {
             info['xp'] = info['xp'] - (42.25 + 40 * info['level']);
-            info['level'] += 1;
+            +info['level'] += 1;
         }
     }
 }
