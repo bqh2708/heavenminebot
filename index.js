@@ -150,25 +150,25 @@ client.on("message", async message => {
         case 'level':
             if (args[0]) {
                 switch (args[0]) {
-                    // case 'set':
-                    //     const lv = Number(args[2]).toFixed(0);
-                    //     if (args[1] && !isNaN(lv)) {
-                    //         if (lv > 0) {
-                    //             const uid = args[1].replace('<@!', '').replace('>', '');
-                    //             var info = level['level'].find(x => x.uid === uid);
-                    //             if (info) {
-                    //                 info['xp'] = 0;
-                    //                 info['level'] = lv;
-                    //             } else {
-                    //                 message.reply('Không tìm thấy id trong hệ thống !').then(m => m.delete(10000));
-                    //             }
-                    //         } else {
-                    //             message.reply('Hãy nhập số dương !').then(m => m.delete(10000));
-                    //         }
-                    //     } else {
-                    //         message.reply('Hãy nhập level và là số !').then(m => m.delete(10000));
-                    //     }
-                    //     break;
+                    case 'set':
+                        const lv = Number(args[2]).toFixed(0);
+                        if (args[1] && !isNaN(lv)) {
+                            if (lv > 0) {
+                                const uid = args[1].replace('<@!', '').replace('>', '');
+                                var info = level['level'].find(x => x.uid === uid);
+                                if (info) {
+                                    info['xp'] = 0;
+                                    info['level'] = lv;
+                                } else {
+                                    message.reply('Không tìm thấy id trong hệ thống !').then(m => m.delete(10000));
+                                }
+                            } else {
+                                message.reply('Hãy nhập số dương !').then(m => m.delete(10000));
+                            }
+                        } else {
+                            message.reply('Hãy nhập level và là số !').then(m => m.delete(10000));
+                        }
+                        break;
 
                     case 'help':
                         embed = new RichEmbed()
@@ -530,7 +530,7 @@ function upExp(info, exp, uid) {
         info['xp'] += exp;
         if (info['xp'] > 42.25 + 40 * info['level']) {
             info['xp'] = info['xp'] - (42.25 + 40 * info['level']);
-            +info['level'] += 1;
+            info['level'] += 1;
         }
     }
 }
