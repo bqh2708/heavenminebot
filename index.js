@@ -481,12 +481,15 @@ client.on("message", async message => {
 });
 
 client.on('guildMemberUpdate', (oldData, newData) => {
-    if (!oldData._roles.includes('660671267917135883') && newData._roles.includes('660671267917135883')) {
-        oldData.guild.members.get(oldData.user.id).setNickname(`HM | ${newData.user.username}`)
-        // oldData.guild.members.get(oldData.user.id).setRoles("661800721251041291")
-    } else if (!newData._roles.includes('660671267917135883')) {
-        oldData.guild.members.get(oldData.user.id).setNickname('');
-
+    try {
+        if (!oldData._roles.includes('660671267917135883') && newData._roles.includes('660671267917135883')) {
+            oldData.guild.members.get(oldData.user.id).setNickname(`HM | ${newData.user.username}`)
+            // oldData.guild.members.get(oldData.user.id).setRoles("661800721251041291")
+        } else if (!newData._roles.includes('660671267917135883')) {
+            oldData.guild.members.get(oldData.user.id).setNickname('');
+        }
+    } catch (error) {
+        console.info('Không có quyền thay đổi nickName !');
     }
 })
 
@@ -527,16 +530,14 @@ function upExp(info, exp, uid) {
         }
         level['level'].push(info);
     } else {
-        var level = +info['level'];
+        var levelCurrent = Number(info['level']);
         info['xp'] += exp;
-        if (info['xp'] > 42.25 + 40 * level) {
-            info['xp'] = info['xp'] - (42.25 + 40 * level);
-            level += 1;
+        if (info['xp'] > 42.25 + 40 * levelCurrent) {
+            info['xp'] = info['xp'] - (42.25 + 40 * levelCurrent);
+            levelCurrent += 1;
         }
     }
 }
-
-
 
 /**********************************************************  MUSIC **********************************************************/
 
