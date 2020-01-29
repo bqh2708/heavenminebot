@@ -4,7 +4,6 @@ const { config } = require("dotenv");
 var fs = require('fs');
 const Canvas = require('canvas');
 const commando = require('discord.js-commando');
-let sql;
 
 
 config({
@@ -169,7 +168,7 @@ client.on("message", async message => {
                         break;
 
                     case 'top':
-                        sql = 'SELECT * FROM TBL_EXP ORDER BY LEVEL DESC, EXP DESC LIMIT 5';
+                        let sql = 'SELECT * FROM TBL_EXP ORDER BY LEVEL DESC, EXP DESC LIMIT 5';
 
                         pool.query(sql, (err, result) => {
                             if (err) {
@@ -202,7 +201,7 @@ client.on("message", async message => {
                 }
             } else {
 
-                sql = 'SELECT * FROM TBL_EXP ORDER BY LEVEL DESC, EXP DESC';
+                let sql = 'SELECT * FROM TBL_EXP ORDER BY LEVEL DESC, EXP DESC';
 
                 const canvas = Canvas.createCanvas(725, 275);
                 const ctx = canvas.getContext('2d');
@@ -638,7 +637,7 @@ function upExp(exp, uid) {
     if (ignoreList.indexOf(uid) >= 0) {
         return;
     }
-    sql = `SELECT * FROM TBL_EXP WHERE USER_ID = '${uid}'`;
+    let sql = `SELECT * FROM TBL_EXP WHERE USER_ID = '${uid}'`;
 
     pool.query(sql, (err, result) => {
         if (err) {
