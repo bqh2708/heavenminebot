@@ -598,6 +598,7 @@ let pool = new Pool({
 
 pool.connect(err => {
     if (err) throw err;
+    console.info('Ket noi thanh cong');
 })
 
 // pool.query(`CREATE TABLE TBL_EXP(
