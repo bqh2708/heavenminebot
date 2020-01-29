@@ -214,12 +214,8 @@ client.on("message", async message => {
                     if (err) {
                         console.info(err);
                     };
-                    if (!result.rows) {
 
-                        console.info('Không tồn tại data : hm! level');
-                        return;
-                    }
-
+                    console.info(result);
                     var info = result.rows.find(x => x.user_id === uid);
                     const top = result.rows.indexOf(info) + 1;
                     let countLevel = info['level'] - 1;
