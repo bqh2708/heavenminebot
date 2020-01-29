@@ -214,7 +214,6 @@ client.on("message", async message => {
                         console.info(err);
                     };
 
-                    console.info(result);
                     var info = result.rows.find(x => x.user_id === uid);
                     const top = result.rows.indexOf(info) + 1;
                     let countLevel = info['level'] - 1;
