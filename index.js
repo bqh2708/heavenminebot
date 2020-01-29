@@ -30,6 +30,16 @@ var curentChannel;
 // When the bot's online, what's in these brackets will be executed
 client.on("ready", () => {
     console.log(`Hi, ${client.user.username} is now online!`);
+    
+     pool.connect( (err, client, done) => {
+            client.query('create table if not exists users( \
+                id text primary key, \
+                name text, \
+                count integer default 0)', (err, result) => {
+                    //disconnent from database on error
+                    done(err);
+            });
+    });
 
     // Set the user presence
     client.user.setPresence({
@@ -628,3 +638,9 @@ function replyHelpMessage(message) {
 }
 
 /**********************************************************  MUSIC END **********************************************************/
+
+/*********************************************************** LEVEL **************************************************************/
+
+var pool = require ('./clientpool.js');
+
+/**********************************************************  LEVEL END **********************************************************/
