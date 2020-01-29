@@ -90,12 +90,7 @@ client.on("message", async message => {
     switch (cmd) {
 
         case 'help':
-            embed = new RichEmbed()
-                .setColor("#98D989")
-                .setDescription('Không có lệnh nào hêt :)')
-                .setAuthor('Danh sách các lệnh HM', client.user.displayAvatarURL);
-
-            message.channel.send(embed);
+            replyHelpMessage(message);
             break;
 
         case 'say':
@@ -459,7 +454,7 @@ client.on("message", async message => {
                         break;
                     case 'help | -h':
                     default:
-                        replyHelpMessage(message);
+                        replyMusicHelpMessage(message);
                         break;
                 }
             } else {
@@ -562,22 +557,6 @@ async function playSong(connection, msg) {
     })
 }
 
-function replyHelpMessage(message) {
-    var content = `
-    \`hm! music <key> \`
-    - \`play\` <Tên bài hát>\t\t\t\tThêm bài vào danh sách phát
-    - \`next\`\t\t\t\tChuyển bài hát tiếp theo ( Sẽ cập nhât tính năng vote ...)
-    - \`loop\`\t\t\t\tBật/Tắt chế độ lặp lại danh sách phát
-    Có thể sử dụng command tắt VD : hm! -m -n = hm! music next
-    `;
-
-    embed = new RichEmbed()
-        .setColor("#98D989")
-        .setAuthor(message.author.username, message.author.displayAvatarURL)
-        .setDescription(content);
-    message.channel.send(embed);
-}
-
 /**********************************************************  MUSIC END **********************************************************/
 const parse = require("pg-connection-string");
 const { Pool } = require('pg');
@@ -667,3 +646,48 @@ function upExp(exp, uid) {
 }
 
 /**********************************************************  LEVEL END **********************************************************/
+
+
+
+
+
+/**********************************************************  MESSAGE **********************************************************/
+
+function replyMusicHelpMessage(message) {
+    var content = `
+    \`hm! music <key> \`
+    - \`play\` <Tên bài hát>          Thêm bài vào danh sách phát
+    - \`next\`                        Chuyển bài hát tiếp theo
+    - \`loop\`                        Bật/Tắt chế độ lặp lại danh sách phát
+    Có thể sử dụng command tắt VD : \`hm! -m -n\` = \`hm! music next\`
+    `;
+
+    embed = new RichEmbed()
+        .setColor("#98D989")
+        .setAuthor(message.author.username, message.author.displayAvatarURL)
+        .setDescription(content);
+    message.channel.send(embed);
+}
+
+function replyHelpMessage(message) {
+    var content = `
+    - \`hm! level help\`            Các comamnd về hệ thống level.
+    - \`hm! music help\`            Các command về hệ thống music.
+
+    Có thể sử dụng command tắt VD : \`hm! -m -h\` = \`hm! music help\`
+    `;
+
+    embed = new RichEmbed()
+        .setColor("#98D989")
+        .setAuthor('Danh sách các lệnh HM', client.user.displayAvatarURL)
+        .setDescription(content);
+    message.channel.send(embed);
+}
+
+
+
+
+
+
+/**********************************************************  MESSAGE END **********************************************************/
+
