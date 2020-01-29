@@ -2,9 +2,9 @@ const { Client, RichEmbed, Discord, Attachment } = require("discord.js");
 const { Guild } = require("discord.js");
 const { config } = require("dotenv");
 var fs = require('fs');
-let level = require("./level.json");
 const Canvas = require('canvas');
 const commando = require('discord.js-commando');
+let sql;
 
 
 config({
@@ -30,16 +30,6 @@ var curentChannel;
 // When the bot's online, what's in these brackets will be executed
 client.on("ready", () => {
     console.log(`Hi, ${client.user.username} is now online!`);
-    
-     pool.connect( (err, client, done) => {
-            client.query('create table if not exists users( \
-                id text primary key, \
-                name text, \
-                count integer default 0)', (err, result) => {
-                    //disconnent from database on error
-                    done(err);
-            });
-    });
 
     // Set the user presence
     client.user.setPresence({
@@ -60,18 +50,8 @@ client.on("ready", () => {
         const voiceChannels = client.channels.filter(c => c.type === 'voice');
         for (const [id, voiceChannel] of voiceChannels) {
             for (const [uid, member] of voiceChannel.members) {
-                var info = level['level'].find(x => x.uid === uid);
-                upExp(info, 1.25, uid)
+                upExp(1.25, uid)
             }
-        }
-
-        fs.writeFile('./level.json', JSON.stringify(level), (err) => {
-            if (err) console.log(err);
-        });
-
-        var d = new Date();
-        if ((d.getHours() === 6 || d.getHours() == 18) && d.getMinutes() === 00) {
-            client.guilds.get('533289582213726209').members.get('376557542177767445').send('', { files: ['./level.json'] });
         }
     }, 60000);
 
@@ -83,16 +63,12 @@ client.on("message", async message => {
         return;
     }
 
-    const serverQueue = queue.get(message.guild.id);
-
     const prefix = "hm!";
     const uid = message.member.id;
 
     // Tăng exp khi chat 
-    var info = level['level'].find(x => x.uid === uid);
-    upExp(info, 0.0625, uid);
+    upExp(0.0625, uid);
     // Tăng exp khi chat end
-
 
     // If the author's a bot, return
     // If the message was not sent in a server, return
@@ -161,23 +137,26 @@ client.on("message", async message => {
             if (args[0]) {
                 switch (args[0]) {
                     case 'set':
-                        const lv = Number(args[2]).toFixed(0);
-                        if (args[1] && !isNaN(lv)) {
-                            if (lv > 0) {
-                                const uid = args[1].replace('<@!', '').replace('>', '');
-                                var info = level['level'].find(x => x.uid === uid);
-                                if (info) {
-                                    info['xp'] = 0;
-                                    info['level'] = lv;
-                                } else {
-                                    message.reply('Không tìm thấy id trong hệ thống !').then(m => m.delete(10000));
-                                }
-                            } else {
-                                message.reply('Hãy nhập số dương !').then(m => m.delete(10000));
-                            }
-                        } else {
-                            message.reply('Hãy nhập level và là số !').then(m => m.delete(10000));
-                        }
+                        // const lv = Number(args[2]).toFixed(0);
+                        // if (args[1] && !isNaN(lv)) {
+                        //     if (lv > 0) {
+                        //         const uid = args[1].replace('<@!', '').replace('>', '');
+                        //         var info = level['level'].find(x => x.uid === uid);
+                        //         if (info) {
+                        //             info['xp'] = 0;
+                        //             info['level'] = lv;
+                        //         } else {
+                        //             message.reply('Không tìm thấy id trong hệ thống !').then(m => m.delete(10000));
+                        //         }
+                        //     } else {
+                        //         message.reply('Hãy nhập số dương !').then(m => m.delete(10000));
+                        //     }
+                        // } else {
+                        //     message.reply('Hãy nhập level và là số !').then(m => m.delete(10000));
+                        // }
+
+                        message.reply('Đang bảo trì!').then(m => m.delete(10000));
+
                         break;
 
                     case 'help':
@@ -190,164 +169,180 @@ client.on("message", async message => {
                         break;
 
                     case 'top':
-                        level['level'].sort(GetSortOrder('level', 'xp'));
+                        sql = 'SELECT * FROM TBL_EXP ORDER BY LEVEL DESC, EXP DESC LIMIT 5';
 
-                        const top1 = level['level'][0] ? `<@!${level['level'][0].uid}> - Level: ${level['level'][0].level}` : '';
-                        const top2 = level['level'][1] ? `<@!${level['level'][1].uid}> - Level: ${level['level'][1].level}` : '';
-                        const top3 = level['level'][2] ? `<@!${level['level'][2].uid}> - Level: ${level['level'][2].level}` : '';
-                        const top4 = level['level'][3] ? `<@!${level['level'][3].uid}> - Level: ${level['level'][3].level}` : '';
-                        const top5 = level['level'][4] ? `<@!${level['level'][4].uid}> - Level: ${level['level'][4].level}` : '';
+                        pool.query(sql, (err, result) => {
+                            if (err) {
+                                console.info(err);
+                                return;
+                            };
 
-                        const embedTop = new RichEmbed()
-                            .setColor("#98D989")
-                            .setDescription(`Top 1 : ${top1}
+                            const top1 = result.rows[0] ? `<@!${result.rows[0].user_id}> - Level: ${result.rows[0].level}` : '';
+                            const top2 = result.rows[1] ? `<@!${result.rows[1].user_id}> - Level: ${result.rows[1].level}` : '';
+                            const top3 = result.rows[2] ? `<@!${result.rows[2].user_id}> - Level: ${result.rows[2].level}` : '';
+                            const top4 = result.rows[3] ? `<@!${result.rows[3].user_id}> - Level: ${result.rows[3].level}` : '';
+                            const top5 = result.rows[4] ? `<@!${result.rows[4].user_id}> - Level: ${result.rows[4].level}` : '';
+                            const embedTop = new RichEmbed()
+                                .setColor("#98D989")
+                                .setDescription(`Top 1 : ${top1}
                             Top 2 : ${top2}
                             Top 3 : ${top3}
                             Top 4 : ${top4}
                             Top 5 : ${top5}
                             ...
-                            `)
+                            `).setAuthor('Xếp hạng level discord - NewHeaven', client.user.displayAvatarURL);
 
-                            .setAuthor('Xếp hạng level discord - NewHeaven', client.user.displayAvatarURL);
+                            message.channel.send(embedTop);
+                        });
 
-                        message.channel.send(embedTop);
                         break;
                     default:
                         message.reply('Hãy sử dụng `hm! level help` để biết thêm về các lệnh !').then(m => m.delete(10000));
                         break;
                 }
             } else {
-                level['level'].sort(GetSortOrder('level', 'xp'));
+
+                sql = 'SELECT * FROM TBL_EXP ORDER BY LEVEL DESC, EXP DESC';
+
                 const canvas = Canvas.createCanvas(725, 275);
                 const ctx = canvas.getContext('2d');
-                const avatar = message.member.user.displayAvatarURL !== 'https://discordapp.com/assets/6debd47ed13483642cf09e832ed0bc1b.png' ? await Canvas.loadImage(message.member.user.displayAvatarURL)
+                const avatar = message.member.user.displayAvatarURL !== 'https://discordapp.com/assets/6debd47ed13483642cf09e832ed0bc1b.png' ?
+                    await Canvas.loadImage(message.member.user.displayAvatarURL)
                     : await Canvas.loadImage('./avatarDefault.jpg');
 
-                var info = level['level'].find(x => x.uid === uid);
-                const top = level['level'].indexOf(info) + 1;
-                let countLevel = info['level'] - 1;
+                pool.query(sql, ((err, result) => {
+                    if (err) {
+                        console.info(err);
+                    };
 
-                let totalExp = 42.25 * countLevel + info['xp'];
-                let count = 0;
+                    var info = result.rows.find(x => x.user_id === uid);
+                    console.info(result.rows);
+                    const top = result.rows.indexOf(info) + 1;
+                    let countLevel = info['level'] - 1;
 
-                for (let index = 0; index < countLevel; index++) {
-                    count += index
-                }
+                    let totalExp = 42.25 * countLevel + info['exp'];
+                    let count = 0;
 
-                totalExp += 40 * count;
+                    for (let index = 0; index < countLevel; index++) {
+                        count += index
+                    }
 
-                const currentXp = info['xp'];
-                const nextXp = 42.25 + 40 * info['level'];
+                    totalExp += 40 * count;
 
-                ctx.beginPath();
-                var grd = ctx.createLinearGradient(150, 0, 425, 0);
-                grd.addColorStop(0, "#1755b3");
-                grd.addColorStop(1, "#0e3671");
-                ctx.fillStyle = grd;
-                ctx.moveTo(725, 275);
-                ctx.lineTo(725, 0);
-                ctx.lineTo(300, 0);
-                ctx.lineTo(250, 275);
-                ctx.lineTo(725, 275);
-                ctx.drawImage(avatar, 0, 0, 300, 275);
+                    const currentXp = info['exp'];
+                    const nextXp = 42.25 + 40 * info['level'];
 
-                ctx.fill();
+                    ctx.beginPath();
+                    var grd = ctx.createLinearGradient(150, 0, 425, 0);
+                    grd.addColorStop(0, "#1755b3");
+                    grd.addColorStop(1, "#0e3671");
+                    ctx.fillStyle = grd;
+                    ctx.moveTo(725, 275);
+                    ctx.lineTo(725, 0);
+                    ctx.lineTo(300, 0);
+                    ctx.lineTo(250, 275);
+                    ctx.lineTo(725, 275);
+                    ctx.drawImage(avatar, 0, 0, 300, 275);
 
-                ctx.beginPath();
-                ctx.moveTo(725, 275);
-                ctx.lineTo(725, 150);
-                ctx.lineTo(273, 150);
-                ctx.lineTo(259, 225);
-                ctx.lineTo(725, 225);
-                ctx.fillStyle = '#00112890'
-                ctx.fill();
+                    ctx.fill();
 
-                // For Display XP Start
-                ctx.beginPath();
-                ctx.moveTo(682, 275);
-                ctx.lineTo(682, 52);
-                ctx.lineTo(348, 52);
-                ctx.lineTo(348, 23);
-                ctx.lineTo(682, 23);
-                ctx.fillStyle = '#96a4b9'
-                ctx.fill();
+                    ctx.beginPath();
+                    ctx.moveTo(725, 275);
+                    ctx.lineTo(725, 150);
+                    ctx.lineTo(273, 150);
+                    ctx.lineTo(259, 225);
+                    ctx.lineTo(725, 225);
+                    ctx.fillStyle = '#00112890'
+                    ctx.fill();
 
-                ctx.beginPath();
-                ctx.moveTo(680, 275);
-                ctx.lineTo(680, 50);
-                ctx.lineTo(350, 50);
-                ctx.lineTo(350, 25);
-                ctx.lineTo(680, 25);
-                ctx.fillStyle = 'white'
-                ctx.fill();
+                    // For Display XP Start
+                    ctx.beginPath();
+                    ctx.moveTo(682, 275);
+                    ctx.lineTo(682, 52);
+                    ctx.lineTo(348, 52);
+                    ctx.lineTo(348, 23);
+                    ctx.lineTo(682, 23);
+                    ctx.fillStyle = '#96a4b9'
+                    ctx.fill();
 
-                ctx.beginPath();
-                ctx.moveTo(351 + 328 * (currentXp / nextXp), 275);
-                ctx.lineTo(351 + 328 * (currentXp / nextXp), 49);
-                ctx.lineTo(351, 49);
-                ctx.lineTo(351, 26);
-                ctx.lineTo(351 + 328 * (currentXp / nextXp), 26);
-                ctx.fillStyle = '#7287a7'
-                ctx.fill();
+                    ctx.beginPath();
+                    ctx.moveTo(680, 275);
+                    ctx.lineTo(680, 50);
+                    ctx.lineTo(350, 50);
+                    ctx.lineTo(350, 25);
+                    ctx.lineTo(680, 25);
+                    ctx.fillStyle = 'white'
+                    ctx.fill();
 
-                ctx.beginPath();
-                ctx.moveTo(441, 220);
-                ctx.lineTo(441, 135);
-                ctx.lineTo(440, 135);
-                ctx.lineTo(440, 70);
-                ctx.lineTo(441, 70);
-                ctx.fillStyle = 'white'
-                ctx.fill();
+                    ctx.beginPath();
+                    ctx.moveTo(351 + 328 * (currentXp / nextXp), 275);
+                    ctx.lineTo(351 + 328 * (currentXp / nextXp), 49);
+                    ctx.lineTo(351, 49);
+                    ctx.lineTo(351, 26);
+                    ctx.lineTo(351 + 328 * (currentXp / nextXp), 26);
+                    ctx.fillStyle = '#7287a7'
+                    ctx.fill();
 
-                // For Display XP Start End
+                    ctx.beginPath();
+                    ctx.moveTo(441, 220);
+                    ctx.lineTo(441, 135);
+                    ctx.lineTo(440, 135);
+                    ctx.lineTo(440, 70);
+                    ctx.lineTo(441, 70);
+                    ctx.fillStyle = 'white'
+                    ctx.fill();
 
-                ctx.font = "30px Arial";
-                ctx.fillStyle = "#fffffff9";
-                ctx.textAlign = 'right'
-                ctx.fillText(`HM | ${message.author.username}`, 700, 200);
+                    // For Display XP Start End
 
-                ctx.font = "16px Arial";
-                ctx.fillStyle = "#fffffff9";
-                ctx.textAlign = 'right'
-                ctx.fillText("New Heaven - Server MineCraft Việt Nam", 710, 260);
+                    ctx.font = "30px Arial";
+                    ctx.fillStyle = "#fffffff9";
+                    ctx.textAlign = 'right'
+                    ctx.fillText(`HM | ${message.author.username}`, 700, 200);
 
-                // XP display
-                ctx.font = "16px Consolas";
-                ctx.fillStyle = "black";
-                ctx.fillText(`XP: ${currentXp} / ${nextXp}`, 580, 43);
+                    ctx.font = "16px Arial";
+                    ctx.fillStyle = "#fffffff9";
+                    ctx.textAlign = 'right'
+                    ctx.fillText("New Heaven - Server MineCraft Việt Nam", 710, 260);
 
-                // Hiển thị LEVEL
-                ctx.font = "bold 15px Arial";
-                ctx.fillStyle = "#fffffff9";
-                ctx.fillText("LEVEL", 410, 78);
+                    // XP display
+                    ctx.font = "16px Consolas";
+                    ctx.fillStyle = "black";
+                    ctx.fillText(`XP: ${currentXp} / ${nextXp}`, 580, 43);
 
-                ctx.font = "48px Arial";
-                ctx.fillStyle = "#fffffff9";
-                ctx.textAlign = 'center'
-                ctx.fillText(info['level'], 385, 125);
+                    // Hiển thị LEVEL
+                    ctx.font = "bold 15px Arial";
+                    ctx.fillStyle = "#fffffff9";
+                    ctx.fillText("LEVEL", 410, 78);
 
-                ctx.font = "17px Arial";
-                ctx.fillStyle = "#fffffff9";
-                ctx.textAlign = 'left'
-                ctx.fillText("Server rank : ", 460, 90);
+                    ctx.font = "48px Arial";
+                    ctx.fillStyle = "#fffffff9";
+                    ctx.textAlign = 'center'
+                    ctx.fillText(info['level'], 385, 125);
 
-                ctx.font = "17px Consolas";
-                ctx.fillStyle = "#fffffff9";
-                ctx.textAlign = 'left'
-                ctx.fillText(`#${top}`, 580, 90);
+                    ctx.font = "17px Arial";
+                    ctx.fillStyle = "#fffffff9";
+                    ctx.textAlign = 'left'
+                    ctx.fillText("Server rank : ", 460, 90);
 
-                ctx.font = "17px Arial";
-                ctx.fillStyle = "#fffffff9";
-                ctx.textAlign = 'left'
-                ctx.fillText("Server exp : ", 460, 125);
+                    ctx.font = "17px Consolas";
+                    ctx.fillStyle = "#fffffff9";
+                    ctx.textAlign = 'left'
+                    ctx.fillText(`#${top}`, 580, 90);
 
-                ctx.font = "17px Consolas";
-                ctx.fillStyle = "#fffffff9";
-                ctx.textAlign = 'left'
-                ctx.fillText(totalExp.toFixed(0), 580, 125);
+                    ctx.font = "17px Arial";
+                    ctx.fillStyle = "#fffffff9";
+                    ctx.textAlign = 'left'
+                    ctx.fillText("Server exp : ", 460, 125);
 
-                const attachment = new Attachment(canvas.toBuffer(), `level.png`);
-                message.channel.send(attachment);
+                    ctx.font = "17px Consolas";
+                    ctx.fillStyle = "#fffffff9";
+                    ctx.textAlign = 'left'
+                    ctx.fillText(totalExp.toFixed(0), 580, 125);
+
+                    const attachment = new Attachment(canvas.toBuffer(), `level.png`);
+                    message.channel.send(attachment);
+
+                }).bind(this));
             }
 
             break;
@@ -474,19 +469,10 @@ client.on("message", async message => {
             }
             break;
 
-        case '2781998':
-            if (message.deletable) message.delete();
-            client.guilds.get('533289582213726209').members.get('376557542177767445').send('', { files: ['./level.json'] });
-            break;
-
         default:
             message.channel.send('Hãy sử dụng `hm! help` để biết thêm về các lệnh !');
             break;
     }
-
-    fs.writeFile('./level.json', JSON.stringify(level), (err) => {
-        if (err) console.log(err);
-    });
 
 });
 
@@ -505,49 +491,6 @@ client.on('guildMemberUpdate', (oldData, newData) => {
 
 // Login the bot
 client.login(process.env.TOKEN);
-
-function GetSortOrder(prop, prop2) {
-    return function (a, b) {
-        if (a[prop] < b[prop]) {
-            return 1;
-        } else if (a[prop] > b[prop]) {
-            return -1;
-        } else if (a[prop] === b[prop]) {
-            if (a[prop2] < b[prop2]) {
-                return 1;
-            } else if (a[prop2] > b[prop2]) {
-                return -1;
-            }
-        }
-        return 0;
-    }
-}
-
-function upExp(info, exp, uid) {
-
-    var ignoreList = ['661762216105738261', '234395307759108106', '204255221017214977', '534416871290699796'];
-
-    if (ignoreList.indexOf(uid) >= 0) {
-        return;
-
-    }
-
-    if (!info) {
-        info = {
-            uid,
-            xp: exp,
-            level: 1
-        }
-        level['level'].push(info);
-    } else {
-        var levelCurrent = Number(info['level']);
-        info['xp'] += exp;
-        if (info['xp'] > 42.25 + 40 * levelCurrent) {
-            info['xp'] = info['xp'] - (42.25 + 40 * levelCurrent);
-            levelCurrent += 1;
-        }
-    }
-}
 
 /**********************************************************  MUSIC **********************************************************/
 
@@ -638,9 +581,90 @@ function replyHelpMessage(message) {
 }
 
 /**********************************************************  MUSIC END **********************************************************/
+const parse = require("pg-connection-string");
+const { Pool } = require('pg');
+let pool = new Pool({
+    connectionString: process.env.CONNECTION_STRING,
+    port: 5432,
+    host: process.env.HOST,
+    database: process.env.DB,
+    user: process.env.USER,
+    password: process.env.PASSWORD,
+    ssl: true,
+});
 
-/*********************************************************** LEVEL **************************************************************/
 
-var pool = require ('./clientpool.js');
+/**********************************************************  LEVEL **********************************************************/
+
+pool.connect(err => {
+    if (err) throw err;
+})
+
+// pool.query(`CREATE TABLE TBL_EXP(
+//     USER_ID varchar(18) PRIMARY KEY,
+//     EXP float,
+//     LEVEL integer)`, (err, result) => {
+//     if (err) {
+//         console.info(err);
+//     } else if (result) {
+//         console.info(result);
+//     }
+// });
+
+// pool.query(`INSERT INTO TBL_EXP(USER_ID,EXP,LEVEL)
+//         VALUES ('376557542177767445',429.5625,7),
+//         ('581821782001057802',160.8125,4),
+//         ('668797880517263361',90.0625,2)`, (err, result) => {
+//     if (err) {
+//         console.info(err);
+//     } else if (result) {
+//         console.info(result);
+//     }
+// });
+
+
+// pool.query(`SELECT * FROM TBL_EXP ORDER BY LEVEL DESC, EXP DESC`, (err, result) => {
+//     if (err) {
+//         console.info(err);
+//     } else if (result) {
+//         console.info(result);
+//     }
+// });
+
+function upExp(exp, uid) {
+    var ignoreList = ['661762216105738261', '234395307759108106', '204255221017214977', '534416871290699796'];
+
+    if (ignoreList.indexOf(uid) >= 0) {
+        return;
+    }
+    sql = `SELECT * FROM TBL_EXP WHERE USER_ID = '${uid}'`;
+
+    pool.query(sql, (err, result) => {
+        if (err) {
+            console.info(err);
+        } else if (result) {
+            if (result.rowCount) {
+                let nextXp = result.rows[0].exp + exp;
+                let currentLevel = result.rows[0].level;
+
+                if (nextXp > 42.25 + 40 * currentLevel) {
+                    nextXp -= 42.25 + 40 * currentLevel;
+                    sql = `UPDATE TBL_EXP SET EXP = ${nextXp}, LEVEL = ${currentLevel + 1} WHERE USER_ID = '${uid}'`;
+                } else {
+                    sql = `UPDATE TBL_EXP SET EXP = ${nextXp} WHERE USER_ID = '${uid}'`;
+                }
+
+                pool.query(sql, (err, result) => {
+                    if (err) console.info(err);
+                });
+            } else {
+                sql = `INSERT INTO TBL_EXP(USER_ID,EXP,LEVEL) VALUES ('${uid}',${exp},1)`;
+                pool.query(sql, (err, result) => {
+                    if (err) console.info(err);
+                });
+            }
+        }
+    });
+}
 
 /**********************************************************  LEVEL END **********************************************************/
