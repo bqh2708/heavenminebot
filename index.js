@@ -65,16 +65,15 @@ client.on("message", async message => {
     const prefix = "hm!";
     const uid = message.member.id;
 
-    // Tăng exp khi chat 
-    // upExp(0.0625, uid);
-    // Tăng exp khi chat end
-
     // If the author's a bot, return
     // If the message was not sent in a server, return
     // If the message doesn't start with the prefix, return
     if (message.author.bot) return;
     if (!message.guild) return;
-    if (!message.content.toLowerCase().startsWith(prefix)) return;
+    if (!message.content.toLowerCase().startsWith(prefix)) {
+        upExp(0.0625, uid);
+        return;
+    };
 
     // Arguments and command variable
     // cmd is the first word in the message, aka the command
