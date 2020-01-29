@@ -66,7 +66,7 @@ client.on("message", async message => {
     const uid = message.member.id;
 
     // Tăng exp khi chat 
-    upExp(0.0625, uid);
+    // upExp(0.0625, uid);
     // Tăng exp khi chat end
 
     // If the author's a bot, return
@@ -338,17 +338,6 @@ client.on("message", async message => {
                 }).bind(this));
             }
 
-            break;
-
-
-        case 'test':
-            const embedTest = new RichEmbed()
-                .setColor("#98D989")
-                .setDescription(`Top 1 : <@!${level['level'][0].uid}>
-                123`)
-                .setAuthor('Danh sách các lệnh level', client.user.displayAvatarURL);
-
-            message.channel.send(embedTest);
             break;
 
         /** Music Bot - NewHeaven */
@@ -624,7 +613,6 @@ function upExp(exp, uid) {
             if (result.rowCount) {
                 let nextXp = result.rows[0].exp + exp;
                 let currentLevel = result.rows[0].level;
-
                 if (nextXp > 42.25 + 40 * currentLevel) {
                     nextXp -= 42.25 + 40 * currentLevel;
                     sql = `UPDATE TBL_EXP SET EXP = ${nextXp}, LEVEL = ${currentLevel + 1} WHERE USER_ID = '${uid}'`;
@@ -646,10 +634,6 @@ function upExp(exp, uid) {
 }
 
 /**********************************************************  LEVEL END **********************************************************/
-
-
-
-
 
 /**********************************************************  MESSAGE **********************************************************/
 
@@ -683,11 +667,6 @@ function replyHelpMessage(message) {
         .setDescription(content);
     message.channel.send(embed);
 }
-
-
-
-
-
 
 /**********************************************************  MESSAGE END **********************************************************/
 
