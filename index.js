@@ -5,6 +5,8 @@ var fs = require('fs');
 const Canvas = require('canvas');
 const commando = require('discord.js-commando');
 
+let votingFlg = false;
+
 
 config({
     path: __dirname + "/.env"
@@ -639,7 +641,7 @@ function upExp(exp, uid) {
 function replyMusicHelpMessage(message) {
     var content = `
     \`hm! music <key> \`
-    - \`play\` <Tên bài hát>          Thêm bài vào danh sách phát
+    - \`play\` <Tên bài hát>            Thêm bài vào danh sách phát
     - \`next\`                        Chuyển bài hát tiếp theo
     - \`loop\`                        Bật/Tắt chế độ lặp lại danh sách phát
     Có thể sử dụng command tắt VD : \`hm! -m -n\` = \`hm! music next\`
