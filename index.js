@@ -201,9 +201,11 @@ client.on("message", async message => {
 
                 const canvas = Canvas.createCanvas(725, 275);
                 const ctx = canvas.getContext('2d');
-                const avatar = message.member.user.displayAvatarURL !== 'https://discordapp.com/assets/6debd47ed13483642cf09e832ed0bc1b.png' ?
+                console.info(message.member.user.displayAvatarURL);
+                const avatar = !message.member.user.displayAvatarURL.startsWith('https://discordapp.com/assets') ?
                     await Canvas.loadImage(message.member.user.displayAvatarURL)
                     : await Canvas.loadImage('./avatarDefault.jpg');
+
 
                 pool.query(sql, ((err, result) => {
                     if (err) {
@@ -563,10 +565,10 @@ let pool = new Pool({
 
 /**********************************************************  LEVEL **********************************************************/
 
-pool.connect(err => {
-    if (err) throw err;
-    console.info('Ket noi thanh cong');
-})
+// pool.connect(err => {
+//     if (err) throw err;
+//     console.info('Ket noi thanh cong');
+// })
 
 // pool.query(`CREATE TABLE TBL_EXP(
 //     USER_ID varchar(18) PRIMARY KEY,
