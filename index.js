@@ -98,26 +98,9 @@ client.on("message", async message => {
             // Check if you can delete the message
             if (message.deletable) message.delete();
 
-            if (args.length === 0) {
-                message.reply(`Nothing to say?`).then(m => m.delete(5000));
-                break;
-            };
-
-            // If the first argument is embed, send an embed,
-            // otherwise, send a normal message
-            if (args[0].toLowerCase() === "embed") {
-                embed = new RichEmbed()
-                    .setDescription(args.slice(1).join(" "))
-                    .setColor("#98D989")
-                    .setTitle('1234')
-                    .setDescription('1234');
-                // .setImage(client.user.displayAvatarURL)
-                // .setAuthor(message.author.username, message.author.displayAvatarURL);
-
-                message.channel.send(embed);
-            } else {
-                message.channel.send(args.join(" "));
-            }
+            let idChannel = args.shift();
+            let channelToSend = client.channels.filter(c => c.id === idChannel).get(idChannel);
+            channelToSend.send(args.join(" "));
             break;
 
         case 'nickname':
