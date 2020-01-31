@@ -201,7 +201,6 @@ client.on("message", async message => {
 
                 const canvas = Canvas.createCanvas(725, 275);
                 const ctx = canvas.getContext('2d');
-                console.info(message.member.user.displayAvatarURL);
                 const avatar = !message.member.user.displayAvatarURL.startsWith('https://discordapp.com/assets') ?
                     await Canvas.loadImage(message.member.user.displayAvatarURL)
                     : await Canvas.loadImage('./avatarDefault.jpg');
