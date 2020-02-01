@@ -51,11 +51,21 @@ client.on("ready", () => {
         const voiceChannels = client.channels.filter(c => c.type === 'voice');
         for (const [id, voiceChannel] of voiceChannels) {
             for (const [uid, member] of voiceChannel.members) {
-                upExp(1.25, uid)
+                if (member.selfMute || selfDeaf) {
+                    upExp(0.5, uid);
+                } else {
+                    upExp(1.25, uid);
+                }
             }
         }
     }, 60000);
 
+    const voiceChannels = client.channels.filter(c => c.type === 'voice');
+    for (const [id, voiceChannel] of voiceChannels) {
+        for (const [uid, member] of voiceChannel.members) {
+
+        }
+    }
 })
 
 // When a message comes in, what's in these brackets will be executed
