@@ -59,6 +59,13 @@ client.on("ready", () => {
             }
         }
     }, 60000);
+
+    const voiceChannels = client.channels.filter(c => c.type === 'voice');
+    for (const [id, voiceChannel] of voiceChannels) {
+        for (const [uid, member] of voiceChannel.members) {
+            console.info(member);
+        }
+    }
 })
 
 // When a message comes in, what's in these brackets will be executed
@@ -114,7 +121,7 @@ client.on("message", async message => {
             }
             break;
 
-        case 'level':
+        case 'level': case '-l':
             if (args[0]) {
                 switch (args[0]) {
                     case 'set':
@@ -140,16 +147,11 @@ client.on("message", async message => {
 
                         break;
 
-                    case 'help':
-                        embed = new RichEmbed()
-                            .setColor("#98D989")
-                            .setDescription('soon...')
-                            .setAuthor('Danh sách các lệnh level', client.user.displayAvatarURL);
-
-                        message.channel.send(embed);
+                    case 'help': case '-h':
+                        replyLevelHelpMessage(message);
                         break;
 
-                    case 'top':
+                    case 'top': case '-t':
                         let sql = 'SELECT * FROM TBL_EXP ORDER BY LEVEL DESC, EXP DESC LIMIT 5';
 
                         pool.query(sql, (err, result) => {
@@ -655,6 +657,27 @@ function replyHelpMessage(message) {
         .setDescription(content);
     message.channel.send(embed);
 }
+
+function replyLevelHelpMessage(message) {
+    var content = `
+    - \`hm! level \`                 Hiển thị thông tin level.
+    - \`hm! level top\`         Hiển thị top 5 level trong server.
+
+    \`Kinh nghiệm nhận được: \`
+    Khi chat : 0.0625 exp.
+    Khi tham gia VoiceChannel : 1.25 exp/1m.
+
+    Có thể sử dụng command tắt VD : \`hm! -l -t\` = \`hm! level top\`
+    `;
+
+    embed = new RichEmbed()
+        .setColor("#cc66ff")
+        .setAuthor('Danh sách các lệnh level', client.user.displayAvatarURL)
+        .setDescription(content);
+    message.channel.send(embed);
+}
+
+
 
 /**********************************************************  MESSAGE END **********************************************************/
 
