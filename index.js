@@ -157,7 +157,7 @@ client.on("message", async message => {
                                     message.reply('Hãy nhập số dương !').then(m => m.delete(10000));
                                 }
                             } else {
-                                if(args[1] === 'all'){
+                                if(args[2] === 'all'){
                                     sql = 'SELECT * FROM TBL_EXP ORDER BY LEVEL DESC, EXP DESC ' + numberChoice;
                                 }
                                 message.reply('Hãy nhập số dương !').then(m => m.delete(10000));
@@ -170,13 +170,15 @@ client.on("message", async message => {
                                 return;
                             };
 
-                            let content;
+                            let content = '';
 
                             result.rows.some((item, index) => {
                                 content += `
-                                Top ${index + 1} : <@!${item.user_id}> - Level: ${item.level}
-                                `
+                                Top ${index + 1} : <@!${item.user_id}> - Level: ${item.level}`
                             });
+
+                            content += `
+                            ...`;
 
                             const embedTop = new RichEmbed()
                                 .setColor("#98D989")
