@@ -157,10 +157,11 @@ client.on("message", async message => {
                                     message.reply('Hãy nhập số dương !').then(m => m.delete(10000));
                                 }
                             } else {
-                                if(args[2] === 'all'){
-                                    sql = 'SELECT * FROM TBL_EXP ORDER BY LEVEL DESC, EXP DESC ' + numberChoice;
+                                if(args[1] === 'all'){
+                                    sql = 'SELECT * FROM TBL_EXP ORDER BY LEVEL DESC, EXP DESC';
+                                }else{
+                                    message.reply('Hãy nhập số dương !').then(m => m.delete(10000));
                                 }
-                                message.reply('Hãy nhập số dương !').then(m => m.delete(10000));
                             }
                         }
 
