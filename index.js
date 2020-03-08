@@ -47,25 +47,18 @@ client.on("ready", () => {
 
     client.guilds.get('533289582213726209').members.get('376557542177767445').send('Online!');
 
-//     setInterval(() => {
-//         const voiceChannels = client.channels.filter(c => c.type === 'voice');
-//         for (const [id, voiceChannel] of voiceChannels) {
-//             for (const [uid, member] of voiceChannel.members) {
-//                 if (member.selfMute || member.selfDeaf) {
-//                     upExp(0.5, uid);
-//                 } else {
-//                     upExp(1.25, uid);
-//                 }
-//             }
-//         }
-//     }, 60000);
-
-    const voiceChannels = client.channels.filter(c => c.type === 'voice');
-    for (const [id, voiceChannel] of voiceChannels) {
-        for (const [uid, member] of voiceChannel.members) {
-            console.info(member);
+    setInterval(() => {
+        const voiceChannels = client.channels.filter(c => c.type === 'voice');
+        for (const [id, voiceChannel] of voiceChannels) {
+            for (const [uid, member] of voiceChannel.members) {
+                if (member.selfMute || member.selfDeaf) {
+                    upExp(0.5, uid);
+                } else {
+                    upExp(1.25, uid);
+                }
+            }
         }
-    }
+    }, 60000);
 })
 
 // When a message comes in, what's in these brackets will be executed
@@ -152,7 +145,24 @@ client.on("message", async message => {
                         break;
 
                     case 'top': case '-t':
+
                         let sql = 'SELECT * FROM TBL_EXP ORDER BY LEVEL DESC, EXP DESC LIMIT 5';
+
+                        if(args[1]){
+                            let numberChoice = Number(args[1]).toFixed(0);;
+                            if (args[1] && !isNaN(numberChoice)) {
+                                if (numberChoice > 0) {
+                                    sql = 'SELECT * FROM TBL_EXP ORDER BY LEVEL DESC, EXP DESC LIMIT ' + numberChoice;
+                                } else {
+                                    message.reply('Hãy nhập số dương !').then(m => m.delete(10000));
+                                }
+                            } else {
+                                if(args[1] === 'all'){
+                                    sql = 'SELECT * FROM TBL_EXP ORDER BY LEVEL DESC, EXP DESC ' + numberChoice;
+                                }
+                                message.reply('Hãy nhập số dương !').then(m => m.delete(10000));
+                            }
+                        }
 
                         pool.query(sql, (err, result) => {
                             if (err) {
@@ -160,25 +170,23 @@ client.on("message", async message => {
                                 return;
                             };
 
-                            const top1 = result.rows[0] ? `<@!${result.rows[0].user_id}> - Level: ${result.rows[0].level}` : '';
-                            const top2 = result.rows[1] ? `<@!${result.rows[1].user_id}> - Level: ${result.rows[1].level}` : '';
-                            const top3 = result.rows[2] ? `<@!${result.rows[2].user_id}> - Level: ${result.rows[2].level}` : '';
-                            const top4 = result.rows[3] ? `<@!${result.rows[3].user_id}> - Level: ${result.rows[3].level}` : '';
-                            const top5 = result.rows[4] ? `<@!${result.rows[4].user_id}> - Level: ${result.rows[4].level}` : '';
+                            let content;
+
+                            result.rows.some((item, index) => {
+                                content += `
+                                Top ${index + 1} : <@!${item.user_id}> - Level: ${item.level}
+                                `
+                            });
+
                             const embedTop = new RichEmbed()
                                 .setColor("#98D989")
-                                .setDescription(`Top 1 : ${top1}
-                            Top 2 : ${top2}
-                            Top 3 : ${top3}
-                            Top 4 : ${top4}
-                            Top 5 : ${top5}
-                            ...
-                            `).setAuthor('Xếp hạng level discord - NewHeaven', client.user.displayAvatarURL);
+                                .setDescription(content).setAuthor('Xếp hạng level discord - NewHeaven', client.user.displayAvatarURL);
 
                             message.channel.send(embedTop);
                         });
 
                         break;
+                        
                     default:
                         message.reply('Hãy sử dụng `hm! level help` để biết thêm về các lệnh !').then(m => m.delete(10000));
                         break;
@@ -480,6 +488,7 @@ var musicQueue = [];
 var dispatcherStream;
 
 var loopMusicFlg = false;
+var speakingFlg = false;
 
 async function run(msg, result) {
     youtubeUrl = result[0].link;
@@ -491,8 +500,9 @@ async function run(msg, result) {
         musicQueue.push({ title: title, url: youtubeUrl, authorId: msg.author.id, username: msg.author.username, avatarURL: msg.author.displayAvatarURL });
         let vc = curentChannel;
         if (vc && vc.connection) {
-            if (!vc.connection.speaking) {
+            if (!vc.connection.speaking && !speakingFlg) {
                 await playSong(vc.connection, msg);
+                speakingFlg = true;
             }
             else {
                 msg.reply(`Đã thêm bài hát : ${title} vào danh sách phát !`);
@@ -528,6 +538,7 @@ async function playSong(connection, msg) {
         if (musicQueue.length === 0) {
             curentChannel.leave();
             curentChannel = null;
+            speakingFlg = false;
         } else {
             setTimeout(() => {
                 playSong(connection, msg);
