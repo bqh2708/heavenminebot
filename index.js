@@ -120,9 +120,9 @@ client.on("message", async message => {
 
                     case 'resetshdgfhjs':
 
-                        let sql = 'DELETE FROM TBL_EXP';
+                        let sqlDelete = 'DELETE FROM TBL_EXP';
 
-                        pool.query(sql, (err, result) => {
+                        pool.query(sqlDelete, (err, result) => {
 
                         });
                         break;
