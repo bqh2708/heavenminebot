@@ -117,27 +117,14 @@ client.on("message", async message => {
         case 'level': case '-l':
             if (args[0]) {
                 switch (args[0]) {
-                    case 'set':
-                        // const lv = Number(args[2]).toFixed(0);
-                        // if (args[1] && !isNaN(lv)) {
-                        //     if (lv > 0) {
-                        //         const uid = args[1].replace('<@!', '').replace('>', '');
-                        //         var info = level['level'].find(x => x.uid === uid);
-                        //         if (info) {
-                        //             info['xp'] = 0;
-                        //             info['level'] = lv;
-                        //         } else {
-                        //             message.reply('Không tìm thấy id trong hệ thống !').then(m => m.delete(10000));
-                        //         }
-                        //     } else {
-                        //         message.reply('Hãy nhập số dương !').then(m => m.delete(10000));
-                        //     }
-                        // } else {
-                        //     message.reply('Hãy nhập level và là số !').then(m => m.delete(10000));
-                        // }
 
-                        message.reply('Đang bảo trì!').then(m => m.delete(10000));
+                    case 'resetshdgfhjs':
 
+                        let sql = 'DELETE FROM TBL_EXP';
+
+                        pool.query(sql, (err, result) => {
+
+                        });
                         break;
 
                     case 'help': case '-h':
@@ -148,7 +135,7 @@ client.on("message", async message => {
 
                         let sql = 'SELECT * FROM TBL_EXP ORDER BY LEVEL DESC, EXP DESC LIMIT 5';
 
-                        if(args[1]){
+                        if (args[1]) {
                             let numberChoice = Number(args[1]).toFixed(0);;
                             if (args[1] && !isNaN(numberChoice)) {
                                 if (numberChoice > 0) {
@@ -157,9 +144,9 @@ client.on("message", async message => {
                                     message.reply('Hãy nhập số dương !').then(m => m.delete(10000));
                                 }
                             } else {
-                                if(args[1] === 'all'){
+                                if (args[1] === 'all') {
                                     sql = 'SELECT * FROM TBL_EXP ORDER BY LEVEL DESC, EXP DESC';
-                                }else{
+                                } else {
                                     message.reply('Hãy nhập số dương !').then(m => m.delete(10000));
                                 }
                             }
@@ -189,12 +176,14 @@ client.on("message", async message => {
                         });
 
                         break;
-                        
+
                     default:
                         message.reply('Hãy sử dụng `hm! level help` để biết thêm về các lệnh !').then(m => m.delete(10000));
                         break;
                 }
             } else {
+
+                upExp(0.0625, uid);
 
                 let sql = 'SELECT * FROM TBL_EXP ORDER BY LEVEL DESC, EXP DESC';
 
@@ -214,17 +203,17 @@ client.on("message", async message => {
                     const top = result.rows.indexOf(info) + 1;
                     let countLevel = info['level'] - 1;
 
-                    let totalExp = 42.25 * countLevel + info['exp'];
+                    let totalExp = 142.25 * countLevel + info['exp'];
                     let count = 0;
 
                     for (let index = 0; index < countLevel; index++) {
                         count += index
                     }
 
-                    totalExp += 40 * count;
+                    totalExp += 60 * count;
 
                     const currentXp = info['exp'];
-                    const nextXp = 42.25 + 40 * info['level'];
+                    const nextXp = 142.25 + 60 * info['level'];
 
                     ctx.beginPath();
                     var grd = ctx.createLinearGradient(150, 0, 425, 0);
@@ -617,8 +606,8 @@ function upExp(exp, uid) {
             if (result.rowCount) {
                 let nextXp = result.rows[0].exp + exp;
                 let currentLevel = result.rows[0].level;
-                if (nextXp > 42.25 + 40 * currentLevel) {
-                    nextXp -= 42.25 + 40 * currentLevel;
+                if (nextXp > 142.25 + 60 * currentLevel) {
+                    nextXp -= 142.25 + 60 * currentLevel;
                     sql = `UPDATE TBL_EXP SET EXP = ${nextXp}, LEVEL = ${currentLevel + 1} WHERE USER_ID = '${uid}'`;
                 } else {
                     sql = `UPDATE TBL_EXP SET EXP = ${nextXp} WHERE USER_ID = '${uid}'`;
@@ -644,9 +633,9 @@ function upExp(exp, uid) {
 function replyMusicHelpMessage(message) {
     var content = `
     \`hm! music <key> \`
-    - \`play\` <Tên bài hát>            Thêm bài vào danh sách phát
-    - \`next\`                        Chuyển bài hát tiếp theo
-    - \`loop\`                        Bật/Tắt chế độ lặp lại danh sách phát
+    - \`play\` <Tên bài hát>            Thêm bài vào danh sách phát
+    - \`next\`                        Chuyển bài hát tiếp theo
+    - \`loop\`                        Bật/Tắt chế độ lặp lại danh sách phát
     Có thể sử dụng command tắt VD : \`hm! -m -n\` = \`hm! music next\`
     `;
 
@@ -659,9 +648,8 @@ function replyMusicHelpMessage(message) {
 
 function replyHelpMessage(message) {
     var content = `
-    - \`hm! level help\`            Các comamnd về hệ thống level.
-    - \`hm! music help\`            Các command về hệ thống music.
-
+    - \`hm! level help\`            Các comamnd về hệ thống level.
+    - \`hm! music help\`            Các command về hệ thống music.
     Có thể sử dụng command tắt VD : \`hm! -m -h\` = \`hm! music help\`
     `;
 
@@ -674,13 +662,11 @@ function replyHelpMessage(message) {
 
 function replyLevelHelpMessage(message) {
     var content = `
-    - \`hm! level \`                 Hiển thị thông tin level.
-    - \`hm! level top\`         Hiển thị top 5 level trong server.
-
+    - \`hm! level \`                 Hiển thị thông tin level.
+    - \`hm! level top\`         Hiển thị top 5 level trong server.
     \`Kinh nghiệm nhận được: \`
     Khi chat : 0.0625 exp.
     Khi tham gia VoiceChannel : 1.25 exp/1m.
-
     Có thể sử dụng command tắt VD : \`hm! -l -t\` = \`hm! level top\`
     `;
 
@@ -694,4 +680,3 @@ function replyLevelHelpMessage(message) {
 
 
 /**********************************************************  MESSAGE END **********************************************************/
-
