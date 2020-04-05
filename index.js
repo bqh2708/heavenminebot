@@ -210,10 +210,10 @@ client.on("message", async message => {
                         count += index
                     }
 
-                    totalExp += 260 * count;
+                    totalExp += 100 * count;
 
                     const currentXp = info['exp'];
-                    const nextXp = 142.25 + 260 * info['level'];
+                    const nextXp = 342.25 + 100 * info['level'];
 
                     ctx.beginPath();
                     var grd = ctx.createLinearGradient(150, 0, 425, 0);
@@ -606,8 +606,8 @@ function upExp(exp, uid) {
             if (result.rowCount) {
                 let nextXp = result.rows[0].exp + exp;
                 let currentLevel = result.rows[0].level;
-                if (nextXp > 142.25 + 260 * currentLevel) {
-                    nextXp -= 142.25 + 260 * currentLevel;
+                if (nextXp > 342.25 + 100 * currentLevel) {
+                    nextXp -= 342.25 + 100 * currentLevel;
                     sql = `UPDATE TBL_EXP SET EXP = ${nextXp}, LEVEL = ${currentLevel + 1} WHERE USER_ID = '${uid}'`;
                 } else {
                     sql = `UPDATE TBL_EXP SET EXP = ${nextXp} WHERE USER_ID = '${uid}'`;
