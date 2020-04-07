@@ -335,6 +335,25 @@ client.on("message", async message => {
         case '-m':
             if (args[0]) {
                 switch (args[0]) {
+                    case 'list': case '-lt':
+                        if (musicQueue.length !== 0) {
+                            var content = "";
+                            musicQueue.some((music, index) => {
+                                content += `
+                                ${index + 1}. ${music.title}`
+                            });
+
+                            embed = new RichEmbed()
+                                .setColor("#cc66ff")
+                                .setAuthor('Danh sách bài hát đang chờ', client.user.displayAvatarURL)
+                                .setDescription(content);
+                            message.channel.send(embed);
+                            break;
+                        } else {
+                            message.reply('Đùa tôi à ! Có phát nhạc đâu mà :| ').then(m => m.delete(5000));
+                        }
+
+
                     case 'play': case '-p':
                         if (args[1]) {
                             if (!curentChannel) {
@@ -360,7 +379,7 @@ client.on("message", async message => {
 
                         if (curentChannel) {
                             if (!votingFlg) {
-                                let countDown = 30;
+                                let countDown = 15;
                                 let interval;
 
                                 embed = new RichEmbed()
