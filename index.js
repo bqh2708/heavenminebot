@@ -132,6 +132,8 @@ client.on("message", async message => {
                         if (uid === "376557542177767445") {
                             let sqlUpdate;
                             let sqlSelect = `SELECT * FROM TBL_EXP WHERE USER_ID = ${args[1]}`;
+                            console.info(result.rows[0].exp);
+                            console.info(args[2]);
 
                             pool.query(sqlSelect, (err, result) => {
                                 if (err) {
@@ -139,8 +141,6 @@ client.on("message", async message => {
                                     return;
                                 };
 
-                                console.info(result.rows[0].exp);
-                                console.info(args[2]);
 
                                 sqlUpdate = `UPDATE TBL_EXP SET EXP ${result.rows[0].exp - args[2]}`
                             });
