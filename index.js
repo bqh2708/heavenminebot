@@ -127,6 +127,28 @@ client.on("message", async message => {
                         });
                         break;
 
+                    case 'removeExp':
+
+                        if (uid === "376557542177767445") {
+                            let sqlUpdate;
+                            let sqlSelect = `SELECT * FROM TBL_EXP WHERE USER_ID = ${args[1]}`;
+
+                            pool.query(sqlSelect, (err, result) => {
+                                if (err) {
+                                    console.info(err);
+                                    return;
+                                };
+                                sqlUpdate = `UPDATE TBL_EXP SET EXP ${result.rows[0].exp - args[2]}`
+                            });
+
+                            pool.query(sqlUpdate, (err, result) => {
+                            });
+
+                        } else {
+                            message.reply('Xin lỗi. Bạn không có quyền !').then(m => m.delete(10000));
+                        }
+                        break;
+
                     case 'help': case '-h':
                         replyLevelHelpMessage(message);
                         break;
@@ -290,6 +312,7 @@ client.on("message", async message => {
                     // XP display
                     ctx.font = "16px Consolas";
                     ctx.fillStyle = "black";
+                    ctx.textAlign = 'center'
                     ctx.fillText(`XP: ${currentXp} / ${nextXp}`, 580, 43);
 
                     // Hiển thị LEVEL
