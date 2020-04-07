@@ -138,11 +138,15 @@ client.on("message", async message => {
                                     console.info(err);
                                     return;
                                 };
+
+                                console.info(result.rows[0].exp);
+                                console.info(args[2]);
+
                                 sqlUpdate = `UPDATE TBL_EXP SET EXP ${result.rows[0].exp - args[2]}`
                             });
 
-                            pool.query(sqlUpdate, (err, result) => {
-                            });
+                            // pool.query(sqlUpdate, (err, result) => {
+                            // });
 
                         } else {
                             message.reply('Xin lỗi. Bạn không có quyền !').then(m => m.delete(10000));
