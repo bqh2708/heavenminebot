@@ -353,6 +353,20 @@ client.on("message", async message => {
                             message.reply('Đùa tôi à ! Có phát nhạc đâu mà :| ').then(m => m.delete(5000));
                         }
 
+                    case 'remove': case '-r':
+
+                        if (args[1]) {
+                            let numberChoice = Number(args[1]).toFixed(0);;
+                            if (args[1] && !isNaN(numberChoice)) {
+                                if (numberChoice > 0) {
+                                    musicQueue.splice(numberChoice - 1, 1);
+                                } else {
+                                    message.reply('Hãy nhập số dương !').then(m => m.delete(10000));
+                                }
+                            }
+                        }
+
+                        break;
 
                     case 'play': case '-p':
                         if (args[1]) {
