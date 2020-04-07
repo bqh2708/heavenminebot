@@ -132,8 +132,9 @@ client.on("message", async message => {
                         if (uid === "376557542177767445") {
                             let sqlUpdate;
                             let sqlSelect = `SELECT * FROM TBL_EXP WHERE USER_ID = ${args[1]}`;
-                            console.info(result.rows[0].exp);
+                            // console.info(result.rows[0].exp);
                             console.info(args[2]);
+                            console.info(args[1]);
 
                             pool.query(sqlSelect, (err, result) => {
                                 if (err) {
@@ -316,7 +317,6 @@ client.on("message", async message => {
                     // XP display
                     ctx.font = "16px Consolas";
                     ctx.fillStyle = "black";
-                    ctx.textAlign = 'center'
                     ctx.fillText(`XP: ${currentXp} / ${nextXp}`, 580, 43);
 
                     // Hiển thị LEVEL
@@ -362,6 +362,19 @@ client.on("message", async message => {
         case '-m':
             if (args[0]) {
                 switch (args[0]) {
+                    case 'list': case '-lt':
+                        var content = "";
+                        musicQueue.some((music, index) => {
+                            content += `
+                            ${index + 1}. ${music.title}`
+                        });
+
+                        embed = new RichEmbed()
+                            .setColor("#cc66ff")
+                            .setAuthor('Danh sách bài hát đang chờ', client.user.displayAvatarURL)
+                            .setDescription(content);
+                        message.channel.send(embed);
+                        break;
                     case 'play': case '-p':
                         if (args[1]) {
                             if (!curentChannel) {
@@ -387,7 +400,7 @@ client.on("message", async message => {
 
                         if (curentChannel) {
                             if (!votingFlg) {
-                                let countDown = 30;
+                                let countDown = 15;
                                 let interval;
 
                                 embed = new RichEmbed()
