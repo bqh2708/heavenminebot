@@ -75,7 +75,7 @@ client.on("message", async message => {
             ctx.font = "45px Arial";
             ctx.fillStyle = "white";
             ctx.textAlign = 'center'
-            ctx.fillText(name, 340, 440);
+            ctx.fillText(name, 335.5, 440);
 
             const attachment = new Attachment(canvas.toBuffer(), `ZV.png`);
             message.channel.send(attachment);
