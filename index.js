@@ -66,7 +66,7 @@ client.on("message", async message => {
             const canvas = Canvas.createCanvas(671, 671);
             const ctx = canvas.getContext('2d');
             const background = Canvas.loadImage('./ZV.png');
-            ctx.drawImage(background, 0, 0, 0, 0);
+            ctx.drawImage(background, 0, 0, 671, 671);
 
 
             const attachment = new Attachment(canvas.toBuffer(), `ZV.png`);
