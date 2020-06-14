@@ -24,8 +24,8 @@ client.on("ready", () => {
     client.user.setPresence({
         status: "online",
         game: {
-            name: "Forever !",
-            type: "17ZV"
+            name: "17ZV",
+            type: "Playing"
         }
     });
 
@@ -72,7 +72,7 @@ client.on("message", async message => {
             const background = await Canvas.loadImage('./ZV.png');
             ctx.drawImage(background, 0, 0, 671, 671);
 
-            ctx.font = "45px Arial";
+            ctx.font = "47px Arial";
             ctx.fillStyle = "white";
             ctx.textAlign = 'center'
             ctx.fillText(name, 335.5, 440);
