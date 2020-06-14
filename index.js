@@ -65,7 +65,7 @@ client.on("message", async message => {
 
             const canvas = Canvas.createCanvas(671, 671);
             const ctx = canvas.getContext('2d');
-            const background = Canvas.loadImage('./ZV.png');
+            const background = await Canvas.loadImage('./ZV.png');
             ctx.drawImage(background, 0, 0, 671, 671);
 
             ctx.font = "30px Arial";
