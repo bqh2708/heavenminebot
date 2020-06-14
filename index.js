@@ -72,10 +72,10 @@ client.on("message", async message => {
             const background = await Canvas.loadImage('./ZV.png');
             ctx.drawImage(background, 0, 0, 671, 671);
 
-            ctx.font = "60px Bahnschrift";
+            ctx.font = "58px Bahnschrift";
             ctx.fillStyle = "white";
             ctx.textAlign = 'center'
-            ctx.fillText(name, 335.5, 440);
+            ctx.fillText(name, 335.5, 450);
 
             const attachment = new Attachment(canvas.toBuffer(), `ZV.png`);
             message.channel.send(attachment);
