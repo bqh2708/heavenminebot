@@ -72,7 +72,7 @@ client.on("message", async message => {
             const background = await Canvas.loadImage('./ZV.png');
             ctx.drawImage(background, 0, 0, 671, 671);
 
-            ctx.font = "bold 50px Arial";
+            ctx.font = "50px Arial";
             ctx.fillStyle = "white";
             ctx.textAlign = 'center'
             ctx.fillText(name, 335.5, 440);
