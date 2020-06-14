@@ -31,6 +31,9 @@ client.on("ready", () => {
 
 })
 
+// Login the bot
+client.login(process.env.TOKEN);
+
 // When a message comes in, what's in these brackets will be executed
 client.on("message", async message => {
     if (!message.member) {
