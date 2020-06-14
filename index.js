@@ -66,12 +66,13 @@ client.on("message", async message => {
             const canvas = Canvas.createCanvas(671, 671);
             const ctx = canvas.getContext('2d');
             const background = await Canvas.loadImage('./ZV.png');
+            const name = args[0] ? args[0] : '';
             ctx.drawImage(background, 0, 0, 671, 671);
 
-            ctx.font = "30px Arial";
+            ctx.font = "48px Consolas";
             ctx.fillStyle = "white";
             ctx.textAlign = 'center'
-            ctx.fillText('MONEYMAKER', 385, 125);
+            ctx.fillText(name, 350, 350);
 
             const attachment = new Attachment(canvas.toBuffer(), `ZV.png`);
             message.channel.send(attachment);
