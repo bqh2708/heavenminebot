@@ -62,17 +62,20 @@ client.on("message", async message => {
     switch (cmd) {
 
         case 'logo':
+            var name = '';
+            if (args.length > 0) {
+                name = args.join('');
+            }
 
             const canvas = Canvas.createCanvas(671, 671);
             const ctx = canvas.getContext('2d');
             const background = await Canvas.loadImage('./ZV.png');
-            const name = args[0] ? args[0] : '';
             ctx.drawImage(background, 0, 0, 671, 671);
 
-            ctx.font = "48px Consolas";
+            ctx.font = "48px Arial";
             ctx.fillStyle = "white";
             ctx.textAlign = 'center'
-            ctx.fillText(name, 350, 350);
+            ctx.fillText(name, 350, 450);
 
             const attachment = new Attachment(canvas.toBuffer(), `ZV.png`);
             message.channel.send(attachment);
