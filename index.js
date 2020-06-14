@@ -64,7 +64,7 @@ client.on("message", async message => {
         case 'logo':
             var name = '';
             if (args.length > 0) {
-                name = args.join('');
+                name = args.join(' ');
             }
 
             const canvas = Canvas.createCanvas(671, 671);
@@ -72,10 +72,10 @@ client.on("message", async message => {
             const background = await Canvas.loadImage('./ZV.png');
             ctx.drawImage(background, 0, 0, 671, 671);
 
-            ctx.font = "48px Arial";
+            ctx.font = "45px Arial";
             ctx.fillStyle = "white";
             ctx.textAlign = 'center'
-            ctx.fillText(name, 350, 450);
+            ctx.fillText(name, 350, 440);
 
             const attachment = new Attachment(canvas.toBuffer(), `ZV.png`);
             message.channel.send(attachment);
