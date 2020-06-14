@@ -63,12 +63,11 @@ client.on("message", async message => {
 
         case 'logo':
 
-            const canvas = Canvas.loadImage('./ZV.png')
+            const canvas = Canvas.createCanvas(671, 671);
             const ctx = canvas.getContext('2d');
+            const background = Canvas.loadImage('./ZV.png');
+            ctx.drawImage(background, 0, 0, 0, 0);
 
-            ctx.font = "bold 15px Arial";
-            ctx.fillStyle = "#fffffff9";
-            ctx.fillText("LEVEL", 410, 78);
 
             const attachment = new Attachment(canvas.toBuffer(), `ZV.png`);
             message.channel.send(attachment);
