@@ -9,10 +9,12 @@
   "author": "HuyBQ",
   "license": "ISC",
   "dependencies": {
+    "@vitalets/google-translate-api": "^3.0.0",
     "canvas": "^2.6.1",
     "discord.js": "^11.5.1",
     "discord.js-commando": "^0.10.0",
     "dotenv": "^8.2.0",
+    "google-translate": "^3.0.0",
     "jquery": "^3.4.1",
     "opusscript": "0.0.7",
     "pg": "^7.17.1",
