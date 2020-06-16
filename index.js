@@ -75,9 +75,10 @@ client.on("message", async message => {
         var currentLanguage;
         var maybeEnValue, maybeViValue;
         console.info(message);
+        return;
 
         if (message.content === '') {
-            return;
+            
         }
 
         translate(message.content, { to: 'en' }).then(res => {
