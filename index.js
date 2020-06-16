@@ -74,16 +74,22 @@ client.on("message", async message => {
     if (!message.content.toLowerCase().startsWith(prefix)) {
         var currentLanguage;
         var maybeEnValue, maybeViValue;
+        console.info(message);
+
+        if (message.content === '') {
+            return;
+        }
+
         translate(message.content, { to: 'en' }).then(res => {
             currentLanguage = res.from.language.iso;
 
             maybeEnValue = currentLanguage !== 'en' ? `English : ${res.text}
-            
+
             ` : '';
 
             translate(message.content, { to: 'vi' }).then(res => {
                 maybeViValue = currentLanguage !== 'vi' ? `Vietnamese : ${res.text}
-                
+
                 ` : '';
 
                 var content = `${message.content}
